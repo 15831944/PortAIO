@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Program.cs" company="SurvivorMalzahar">
+// <copyright file="Program.cs.cs" company="SurvivorMalzahar">
 //      Copyright (c) SurvivorMalzahar. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ using LeagueSharp.Common;
 using SebbyLib;
 using Color = SharpDX.Color;
 using HitChance = SebbyLib.Prediction.HitChance;
-
+using Orbwalking = SebbyLib.Orbwalking;
 using Prediction = SebbyLib.Prediction.Prediction;
 using PredictionInput = SebbyLib.Prediction.PredictionInput;
 
@@ -440,16 +440,7 @@ namespace SurvivorMalzahar
             if ((m == null) || !m.IsValidTarget())
                 return;
 
-            if (useE && m.IsValidTarget(E.Range) && E.IsReady())
-                E.CastOnUnit(m);
-            if (useW && m.IsValidTarget(Player.AttackRange) && W.IsReady())
-                W.CastOnUnit(m);
-            if (useQ && m.IsValidTarget(Q.Range) && Q.IsReady())
-                SebbySpell(Q, m);
-            if (useR && m.IsValidTarget(R.Range) && R.IsReady() && m.HasBuff("malzahare"))
-                R.CastOnUnit(m);
-
-            /*if (Player.Mana > E.ManaCost + W.ManaCost + R.ManaCost)
+            if (Player.Mana > E.ManaCost + W.ManaCost + R.ManaCost)
             {
                 if (useQ && Q.IsReady() && (Player.Mana > Q.ManaCost) && Q.IsInRange(m))
                     SebbySpell(Q, m);
@@ -464,7 +455,7 @@ namespace SurvivorMalzahar
                 if (useQ && Q.IsReady() && (Player.Mana > Q.ManaCost) && Q.IsInRange(m))
                     SebbySpell(Q, m);
                 if (useW && W.IsReady() && (Player.Mana > W.ManaCost) && W.IsInRange(m)) W.Cast(m);
-            }*/ //NOTE: OLD COMBO
+            }
             if (Menu.Item("useIgniteInCombo").GetValue<bool>())
                 if (m.Health < Player.GetSummonerSpellDamage(m, Damage.SummonerSpell.Ignite))
                     ObjectManager.Player.Spellbook.CastSpell(igniteSlot, m);

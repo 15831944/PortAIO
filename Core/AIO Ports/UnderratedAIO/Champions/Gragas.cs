@@ -20,7 +20,7 @@ using LeagueSharp.Common;
     {
         public static Menu config;
         public static Orbwalking.Orbwalker orbwalker;
-        
+        public static AutoLeveler autoLeveler;
         public static Spell Q, W, E, E2, R;
         public static readonly AIHeroClient player = ObjectManager.Player;
         public static bool justQ, useIgnite, justE, canUlt, justR;
@@ -37,7 +37,7 @@ using LeagueSharp.Common;
             Drawing.OnDraw += Game_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             Helpers.Jungle.setSmiteSlot();
-            
+            HpBarDamageIndicator.DamageToUnit = ComboDamage;
             Obj_AI_Base.OnProcessSpellCast += Game_ProcessSpell;
             GameObject.OnCreate += GameObjectOnOnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
@@ -145,7 +145,7 @@ using LeagueSharp.Common;
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if(false)
+            if (FpsBalancer.CheckCounter())
             {
                 return;
             }
@@ -283,12 +283,10 @@ using LeagueSharp.Common;
                 HeroManager.Enemies.Where(e => e.Distance(savedQ.position) < QExplosionRange && e.IsValidTarget())
                     .OrderByDescending(e => e.Distance(savedQ.position))
                     .FirstOrDefault();
-
             if (targethero == null)
             {
                 return;
             }
-
             if (savedQ.deltaT() < 2000 &&
                 Prediction.GetPrediction(targethero, 0.1f).UnitPosition.Distance(savedQ.position) < QExplosionRange &&
                 HeroManager.Enemies.Count(
@@ -649,7 +647,7 @@ using LeagueSharp.Common;
         {
             DrawHelper.DrawCircle(config.Item("drawqq", true).GetValue<Circle>(), Q.Range);
             DrawHelper.DrawCircle(config.Item("drawee", true).GetValue<Circle>(), E.Range);
-            
+            HpBarDamageIndicator.Enabled = config.Item("drawcombo", true).GetValue<bool>();
         }
 
         private static float ComboDamage(AIHeroClient hero)

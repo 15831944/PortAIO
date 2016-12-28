@@ -11,7 +11,7 @@ using Color = System.Drawing.Color;
 
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace BadaoKingdom.BadaoChampion.BadaoGraves
+ namespace BadaoKingdom.BadaoChampion.BadaoGraves
 {
     public static class BadaoGravesVariables
     {
@@ -28,9 +28,5 @@ namespace BadaoKingdom.BadaoChampion.BadaoGraves
 
         public static MenuItem AutoSmite;
         public static MenuItem AutoRKS;
-
-        public static MenuItem BurstKey;
-
-        public static MenuItem ExtraAADelay;
     }
 }

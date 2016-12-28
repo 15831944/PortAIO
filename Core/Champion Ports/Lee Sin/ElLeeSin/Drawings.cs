@@ -1,12 +1,8 @@
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace ElLeeSin
+ using LeagueSharp.Common; 
+ namespace ElLeeSin
 {
     using System;
-
-    using ElLeeSin.Components;
-    using ElLeeSin.Components.SpellManagers;
-    using ElLeeSin.Utilities;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -21,35 +17,35 @@ namespace ElLeeSin
 
         public static void OnDraw(EventArgs args)
         {
-            var newTarget = Misc.GetMenuItem("insecMode")
+            var newTarget = Program.ParamBool("insecMode")
                                 ? (TargetSelector.GetSelectedTarget()
                                    ?? TargetSelector.GetTarget(
-                                       LeeSin.spells[LeeSin.Spells.Q].Range,
+                                       Program.spells[Program.Spells.Q].Range,
                                        TargetSelector.DamageType.Physical))
                                 : TargetSelector.GetTarget(
-                                    LeeSin.spells[LeeSin.Spells.Q].Range,
+                                    Program.spells[Program.Spells.Q].Range,
                                     TargetSelector.DamageType.Physical);
 
-            if (InsecManager.ClicksecEnabled && Misc.GetMenuItem("clickInsec"))
+            if (Program.ClicksecEnabled && Program.ParamBool("clickInsec"))
             {
-                Render.Circle.DrawCircle(InsecManager.InsecClickPos, 100, Color.DeepSkyBlue);
+                Render.Circle.DrawCircle(Program.InsecClickPos, 100, Color.DeepSkyBlue);
             }
 
             var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
-            if (Misc.GetMenuItem("ElLeeSin.Draw.Insec.Text"))
+            if (Program.ParamBool("ElLeeSin.Draw.Insec.Text"))
             {
                 Drawing.DrawText(playerPos.X, playerPos.Y + 40, Color.White, "Flash Insec enabled");
             }
 
-            if (Misc.GetMenuItem("Draw.Insec.Lines"))
+            if (Program.ParamBool("Draw.Insec.Lines"))
             {
                 if ((newTarget != null) && newTarget.IsVisible && newTarget.IsValidTarget() && !newTarget.IsDead
                     && (ObjectManager.Player.Distance(newTarget) < 3000))
                 {
                     Vector2 targetPos = Drawing.WorldToScreen(newTarget.Position);
                     Drawing.DrawLine(
-                        InsecManager.InsecLinePos.X,
-                        InsecManager.InsecLinePos.Y,
+                        Program.InsecLinePos.X,
+                        Program.InsecLinePos.Y,
                         targetPos.X,
                         targetPos.Y,
                         3,
@@ -61,11 +57,11 @@ namespace ElLeeSin
                         Color.White,
                         "Selected Target");
 
-                    Drawing.DrawCircle(InsecManager.GetInsecPos(newTarget), 100, Color.DeepSkyBlue);
+                    Drawing.DrawCircle(Program.GetInsecPos(newTarget), 100, Color.DeepSkyBlue);
                 }
             }
 
-            if (!Misc.GetMenuItem("DrawEnabled"))
+            if (!Program.ParamBool("DrawEnabled"))
             {
                 return;
             }
@@ -78,39 +74,39 @@ namespace ElLeeSin
                 }
             }
 
-            if (MyMenu.Menu.Item("ElLeeSin.Wardjump").GetValue<KeyBind>().Active
-                && Misc.GetMenuItem("ElLeeSin.Draw.WJDraw"))
+            if (InitMenu.Menu.Item("ElLeeSin.Wardjump").GetValue<KeyBind>().Active
+                && Program.ParamBool("ElLeeSin.Draw.WJDraw"))
             {
-                Render.Circle.DrawCircle(Wardmanager.JumpPos.To3D(), 20, Color.Red);
+                Render.Circle.DrawCircle(Program.JumpPos.To3D(), 20, Color.Red);
                 Render.Circle.DrawCircle(ObjectManager.Player.Position, 600, Color.Red);
             }
-            if (Misc.GetMenuItem("ElLeeSin.Draw.Q"))
+            if (Program.ParamBool("ElLeeSin.Draw.Q"))
             {
                 Render.Circle.DrawCircle(
                     ObjectManager.Player.Position,
-                    LeeSin.spells[LeeSin.Spells.Q].Range - 80,
-                    LeeSin.spells[LeeSin.Spells.Q].IsReady() ? Color.LightSkyBlue : Color.Tomato);
+                    Program.spells[Program.Spells.Q].Range - 80,
+                    Program.spells[Program.Spells.Q].IsReady() ? Color.LightSkyBlue : Color.Tomato);
             }
-            if (Misc.GetMenuItem("ElLeeSin.Draw.W"))
+            if (Program.ParamBool("ElLeeSin.Draw.W"))
             {
                 Render.Circle.DrawCircle(
                     ObjectManager.Player.Position,
-                    LeeSin.spells[LeeSin.Spells.W].Range - 80,
-                    LeeSin.spells[LeeSin.Spells.W].IsReady() ? Color.LightSkyBlue : Color.Tomato);
+                    Program.spells[Program.Spells.W].Range - 80,
+                    Program.spells[Program.Spells.W].IsReady() ? Color.LightSkyBlue : Color.Tomato);
             }
-            if (Misc.GetMenuItem("ElLeeSin.Draw.E"))
+            if (Program.ParamBool("ElLeeSin.Draw.E"))
             {
                 Render.Circle.DrawCircle(
                     ObjectManager.Player.Position,
-                    LeeSin.spells[LeeSin.Spells.E].Range - 80,
-                    LeeSin.spells[LeeSin.Spells.E].IsReady() ? Color.LightSkyBlue : Color.Tomato);
+                    Program.spells[Program.Spells.E].Range - 80,
+                    Program.spells[Program.Spells.E].IsReady() ? Color.LightSkyBlue : Color.Tomato);
             }
-            if (Misc.GetMenuItem("ElLeeSin.Draw.R"))
+            if (Program.ParamBool("ElLeeSin.Draw.R"))
             {
                 Render.Circle.DrawCircle(
                     ObjectManager.Player.Position,
-                    LeeSin.spells[LeeSin.Spells.R].Range - 80,
-                    LeeSin.spells[LeeSin.Spells.R].IsReady() ? Color.LightSkyBlue : Color.Tomato);
+                    Program.spells[Program.Spells.R].Range - 80,
+                    Program.spells[Program.Spells.R].IsReady() ? Color.LightSkyBlue : Color.Tomato);
             }
         }
 

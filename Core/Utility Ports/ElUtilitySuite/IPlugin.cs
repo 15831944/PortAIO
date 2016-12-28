@@ -1,6 +1,4 @@
-using EloBuddy;
-using LeagueSharp.Common;
-namespace ElUtilitySuite
+using EloBuddy; namespace ElUtilitySuite
 {
     using LeagueSharp.Common;
 

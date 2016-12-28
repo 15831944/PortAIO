@@ -17,7 +17,6 @@
 #region
 
 using LeagueSharp;
-using LeagueSharp.Common;
 
 
 #endregion
@@ -74,7 +73,7 @@ using EloBuddy;
         public string SpellName;
         public bool TakeClosestPath = false;
         public string ToggleParticleName = "";
-        public SkillshotType Type;
+        public LeagueSharp.Common.SkillshotType Type;
         private int _radius;
         private int _range;
 
@@ -83,7 +82,7 @@ using EloBuddy;
         public SpellData(string championName,
             string spellName,
             SpellSlot slot,
-            SkillshotType type,
+            LeagueSharp.Common.SkillshotType type,
             int delay,
             int range,
             int radius,
@@ -145,7 +144,7 @@ using EloBuddy;
         {
             get
             {
-                for(int i = 0; i < CollisionObjects.Length; i++)
+                for (int i = 0; i < CollisionObjects.Length; i++)
                 {
                     if (CollisionObjects[i] == SpellData.CollisionObjectTypes.Champions || CollisionObjects[i] == SpellData.CollisionObjectTypes.Minion)
                         return true;

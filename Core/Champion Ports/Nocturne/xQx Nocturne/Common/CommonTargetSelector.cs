@@ -4,11 +4,10 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Nocturne.Champion;
-using PortAIO.Properties;
 
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace Nocturne.Common
+ using LeagueSharp.Common; 
+ namespace Nocturne.Common
 {
     using System.Collections.Generic;
     using System.Xml;
@@ -17,6 +16,7 @@ namespace Nocturne.Common
     using SharpDX.Direct3D9;
 
     using Color = System.Drawing.Color;
+    using PortAIO.Properties;
 
     enum TargetSelect
     {
@@ -316,14 +316,14 @@ namespace Nocturne.Common
                     DrawText(
                         Text,
                         "1st Priority Target",
-                        e.HPBarPosition.X + e.BoundingRadius/2f - (e.BaseSkinName.Length/2f) - 27,
+                        e.HPBarPosition.X + e.BoundingRadius/2f - (e.CharData.BaseSkinName.Length/2f) - 27,
                         e.HPBarPosition.Y - 23,
                         SharpDX.Color.Black);
 
                     DrawText(
                         Text,
                         "1st Priority Target",
-                        e.HPBarPosition.X + e.BoundingRadius/2f - (e.BaseSkinName.Length/2f) - 29,
+                        e.HPBarPosition.X + e.BoundingRadius/2f - (e.CharData.BaseSkinName.Length/2f) - 29,
                         e.HPBarPosition.Y - 25,
                         SharpDX.Color.IndianRed);
                 }

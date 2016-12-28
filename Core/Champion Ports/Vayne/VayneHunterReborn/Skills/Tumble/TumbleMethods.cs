@@ -61,7 +61,7 @@ using EloBuddy;
             if (MobNames.ToList().Any(m => m.ToLower().Equals(target.CharData.BaseSkinName.ToLower(), StringComparison.InvariantCultureIgnoreCase)) 
                 && MenuExtensions.GetItemValue<bool>("dz191.vhr.farm.qjungle"))
             {
-                DefaultQCast(Game.CursorPos, target);
+                DefaultQCast(target.ServerPosition, target);
                 return;
             }
             

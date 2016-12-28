@@ -14,7 +14,7 @@ namespace Lord_s_Vayne.QLogic
         public static void Run()
         {
             if ((Program.orbwalker.ActiveMode.ToString() == "Combo") && Program.qmenu.Item("UseQC").GetValue<bool>() && !Program.qmenu.Item("FastQ").GetValue<bool>()
-                   || (Program.orbwalker.ActiveMode.ToString() == "Mixed" && Program.qmenu.Item("hq").GetValue<bool>()))
+                    || (Program.orbwalker.ActiveMode.ToString() == "Mixed" && Program.qmenu.Item("hq").GetValue<bool>()))
 
             {
                 if (Program.qmenu.Item("restrictq").GetValue<bool>())
@@ -50,7 +50,7 @@ namespace Lord_s_Vayne.QLogic
                 //Q.Cast(Game.CursorPos);
             }
 
-            if ((Program.orbwalker.ActiveMode.ToString() == "Combo") && Program.qmenu.Item("UseQC").GetValue<bool>() && Program.qmenu.Item("FastQ").GetValue<bool>()
+            if ((Program.orbwalker.ActiveMode.ToString() == "Combo")&& Program.qmenu.Item("UseQC").GetValue<bool>() && Program.qmenu.Item("UseQC").GetValue<bool>() && Program.qmenu.Item("FastQ").GetValue<bool>()
                    || (Program.orbwalker.ActiveMode.ToString() == "Mixed" && Program.qmenu.Item("hq").GetValue<bool>()))
             {
                 if (Program.qmenu.Item("restrictq").GetValue<bool>())
@@ -83,11 +83,9 @@ namespace Lord_s_Vayne.QLogic
 
 
                 }
+                //Q.Cast(Game.CursorPos);//
             }
         }
-                //Q.Cast(Game.CursorPos);
-                
-            
 
 
         public static Vector3 Normalize(Vector3 A)
@@ -98,6 +96,5 @@ namespace Lord_s_Vayne.QLogic
         }
     }
 }
-
  
 

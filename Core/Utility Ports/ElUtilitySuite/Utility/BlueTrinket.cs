@@ -1,11 +1,9 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace ElUtilitySuite.Utility
+ namespace ElUtilitySuite.Utility
 {
     using System;
     using System.Linq;
-
-    using ElUtilitySuite.Logging;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -106,7 +104,7 @@ namespace ElUtilitySuite.Utility
             }
             catch (Exception e)
             {
-                Logging.AddEntry(LoggingEntryType.Error, "@BlueTrinket.cs: An error occurred: {0}", e);
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 
@@ -149,7 +147,7 @@ namespace ElUtilitySuite.Utility
             }
             catch (Exception e)
             {
-                Logging.AddEntry(LoggingEntryType.Error, "@BlueTrinket.cs: An error occurred: {0}", e);
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 

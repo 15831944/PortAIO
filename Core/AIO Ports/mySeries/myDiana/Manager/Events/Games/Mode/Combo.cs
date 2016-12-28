@@ -31,9 +31,9 @@ namespace myDiana.Manager.Events.Games.Mode
                 {
                     if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(Q.Range))
                     {
-                        var qPred = Q.GetPrediction(target, true);
+                        var qPred = Q.GetPrediction(target, true, -1, new[] {CollisionableObjects.YasuoWall});
 
-                        if (qPred.Hitchance >= HitChance.VeryHigh)
+                        if (qPred.Hitchance >= HitChance.VeryHigh || qPred.Hitchance == HitChance.Immobile)
                         {
                             Q.Cast(qPred.CastPosition, true);
                         }
@@ -66,9 +66,9 @@ namespace myDiana.Manager.Events.Games.Mode
 
                             if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(Q.Range))
                             {
-                                var qPred = Q.GetPrediction(target, true);
+                                var qPred = Q.GetPrediction(target, true, -1, new[] { CollisionableObjects.YasuoWall });
 
-                                if (qPred.Hitchance >= HitChance.VeryHigh)
+                                if (qPred.Hitchance >= HitChance.VeryHigh || qPred.Hitchance == HitChance.Immobile)
                                 {
                                     Q.Cast(qPred.CastPosition, true);
                                 }
@@ -104,9 +104,9 @@ namespace myDiana.Manager.Events.Games.Mode
 
                                 if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(Q.Range))
                                 {
-                                    var qPred = Q.GetPrediction(target, true);
+                                    var qPred = Q.GetPrediction(target, true, -1, new[] { CollisionableObjects.YasuoWall });
 
-                                    if (qPred.Hitchance >= HitChance.VeryHigh)
+                                    if (qPred.Hitchance >= HitChance.VeryHigh || qPred.Hitchance == HitChance.Immobile)
                                     {
                                         Q.Cast(qPred.CastPosition, true);
                                     }

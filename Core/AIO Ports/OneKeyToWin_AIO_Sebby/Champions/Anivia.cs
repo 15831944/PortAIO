@@ -119,13 +119,13 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             if (Program.Combo && Config.Item("AACombo", true).GetValue<bool>())
             {
                 if (!E.IsReady())
-                    Orbwalking.Attack = true;
+                    SebbyLib.Orbwalking.Attack = true;
 
                 else
-                    Orbwalking.Attack = false;
+                    SebbyLib.Orbwalking.Attack = false;
             }
             else
-                Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Attack = true;
 
             if (Q.IsReady() && QMissile != null && QMissile.Position.CountEnemiesInRange(230) > 0)
                 Q.Cast();
@@ -241,7 +241,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
         private void farmE()
         {
-            if (FarmSpells && Config.Item("farmE", true).GetValue<bool>() && !Orbwalking.CanAttack())
+            if (FarmSpells && Config.Item("farmE", true).GetValue<bool>() && !SebbyLib.Orbwalking.CanAttack())
             {
                 var minions = Cache.GetMinions(Player.ServerPosition, E.Range);
                 foreach (var minion in minions.Where(minion => minion.Health > Player.GetAutoAttackDamage(minion)))

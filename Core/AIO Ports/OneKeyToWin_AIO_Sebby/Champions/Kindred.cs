@@ -47,7 +47,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
-            Orbwalking.AfterAttack += Orbwalker_AfterAttack;
+            SebbyLib.Orbwalking.AfterAttack += Orbwalker_AfterAttack;
         }
 
 

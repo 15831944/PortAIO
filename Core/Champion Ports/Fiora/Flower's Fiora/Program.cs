@@ -1,6 +1,6 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace Flowers_Fiora
+ namespace Flowers_Fiora
 {
     using System;
     using LeagueSharp;
@@ -10,10 +10,10 @@ namespace Flowers_Fiora
     {
         public static void Main()
         {
-            OnLoad(new EventArgs());
+            OnLoad();
         }
 
-        private static void OnLoad(EventArgs Args)
+        private static void OnLoad()
         {
             if (ObjectManager.Player.ChampionName != "Fiora")
             {

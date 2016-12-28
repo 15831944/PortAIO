@@ -101,7 +101,7 @@ using EloBuddy;
 
         public static void InitOrbwalker()
         {
-            Program.Orbwalker = new Orbwalking.Orbwalker(Program.OrbwalkerMenu);
+            Program.Orbwalker = new MyOrbwalker.Orbwalker(Program.OrbwalkerMenu);
         }
 
         public static void FinishMenuInit()

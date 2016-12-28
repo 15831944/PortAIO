@@ -23,7 +23,6 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using EloBuddy;
-using System.Linq;
 
 namespace SPrediction
 {
@@ -76,7 +75,7 @@ namespace SPrediction
             {
                 foreach (AIHeroClient enemy in HeroManager.Enemies)
                 {
-                    var waypoints = enemy.Path.ToList().To2D();
+                    var waypoints = enemy.GetWaypoints();
                     if (waypoints != null && waypoints.Count > 1)
                     {
                         for (int i = 0; i < waypoints.Count - 1; i++)

@@ -33,8 +33,8 @@ using Utils = LeagueSharp.Common.Utils;
 #endregion
 
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace Nocturne.Evade
+ using LeagueSharp.Common; 
+ namespace Nocturne.Evade
 {
     internal class EvadeMain
     {
@@ -122,7 +122,6 @@ namespace Nocturne.Evade
             DangerousTargetedSpells.Add(new DangerousSpells("rammusE", "rammus", SpellSlot.E));
             DangerousTargetedSpells.Add(new DangerousSpells("singedW", "singed", SpellSlot.W));
             DangerousTargetedSpells.Add(new DangerousSpells("kayleQ", "kayle", SpellSlot.Q));
-            DangerousTargetedSpells.Add(new DangerousSpells("vayneE", "vayne", SpellSlot.E));
         }
 
         public static bool Evading
@@ -419,7 +418,7 @@ namespace Nocturne.Evade
 
                         foreach (var m in ObjectManager.Get<Obj_AI_Minion>())
                         {
-                            if (m.BaseSkinName == "jarvanivstandard" && m.Team == skillshot.Unit.Team)
+                            if (m.CharData.BaseSkinName == "jarvanivstandard" && m.Team == skillshot.Unit.Team)
                             {
                                 
                                 var extendedE = new Skillshot(

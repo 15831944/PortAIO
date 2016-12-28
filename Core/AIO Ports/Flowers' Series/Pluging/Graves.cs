@@ -230,7 +230,7 @@ namespace Flowers_ADC_Series.Pluging
                     HeroManager.Enemies.Where(
                         x => x.Check(R.Range) && 
                         Menu.GetBool("KillStealR" + x.ChampionName.ToLower()) && x.Health < R.GetDamage(x) &&
-                        x.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me)))
+                        x.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + E.Range - 100))
                 {
                     SpellManager.PredCast(R, target);
                 }

@@ -19,65 +19,13 @@ namespace Flowers_Yasuo.Evade
         public const int EvadingFirstTimeOffset = 250;
         public const int EvadingSecondTimeOffset = 80;
 
-        public static Menu Menu;
+        public static readonly Menu Menu = Logic.Menu;
 
         public static readonly List<Skillshot> DetectedSkillshots = new List<Skillshot>();
 
-        public static void Init(Menu mainMenu)
+        public static void Init()
         {
-            Menu = mainMenu;
-
             Collision.Init();
-
-            var evadeSpells = Menu.AddSubMenu(new Menu("Evade spells", "evadeSpells"));
-            {
-                foreach (var spell in EvadeSpellDatabase.Spells)
-                {
-                    var subMenu = evadeSpells.AddSubMenu(new Menu("Yasuo " + spell.Slot, spell.Name));
-                    {
-                        subMenu.AddItem(
-                            new MenuItem("DangerLevel" + spell.Name, "Danger level", true).SetValue(
-                                new Slider(spell.DangerLevel, 5, 1)));
-
-                        if (spell.Slot == SpellSlot.E)
-                        {
-                            subMenu.AddItem(new MenuItem("ETower", "Under Tower", true).SetValue(false));
-                        }
-
-                        subMenu.AddItem(new MenuItem("Enabled" + spell.Name, "Enabled", true).SetValue(true));
-                    }
-                }
-            }
-
-            var skillShotMenu = Menu.AddSubMenu(new Menu("Skillshots", "Skillshots"));
-            {
-                foreach (
-                    var hero in
-                    HeroManager.Enemies.Where(
-                        i => SpellDatabase.Spells.Any(a => a.ChampionName == i.ChampionName)))
-                {
-                    skillShotMenu.AddSubMenu(new Menu(hero.ChampionName, "Evade" + hero.ChampionName.ToLower()));
-                }
-
-                foreach (
-                    var spell in
-                    SpellDatabase.Spells.Where(
-                        i => HeroManager.Enemies.Any(a => a.ChampionName == i.ChampionName)))
-                {
-                    var subMenu =
-                        skillShotMenu.SubMenu("Evade" + spell.ChampionName.ToLower())
-                            .AddSubMenu(new Menu(spell.SpellName + " " + spell.Slot,
-                                "EvadeSpell" + spell.MenuItemName));
-                    {
-                        subMenu.AddItem(
-                            new MenuItem("DangerLevel" + spell.MenuItemName, "Danger Level", true).SetValue(
-                                new Slider(spell.DangerValue, 1, 5)));
-                        subMenu.AddItem(
-                            new MenuItem("Enabled" + spell.MenuItemName, "Enabled", true).SetValue(
-                                !spell.DisabledByDefault));
-                    }
-                }
-            }
 
             Game.OnUpdate += OnUpdate;
             SkillshotDetector.OnDeleteMissile += OnDeleteMissile;
@@ -93,16 +41,26 @@ namespace Flowers_Yasuo.Evade
                 skillshot.OnUpdate();
             }
 
-            if (ObjectManager.Player.IsDead || ObjectManager.Player.HasBuffOfType(BuffType.SpellImmunity) ||
-                ObjectManager.Player.HasBuffOfType(BuffType.SpellShield))
+            if (ObjectManager.Player.IsDead)
             {
                 return;
             }
 
-            if (!IsSafePath(ObjectManager.Player.GetWaypoints(), 100).IsSafe &&
-                !IsSafe(ObjectManager.Player.ServerPosition.To2D()).IsSafe)
+            if (ObjectManager.Player.HasBuffOfType(BuffType.SpellImmunity) || ObjectManager.Player.HasBuffOfType(BuffType.SpellShield))
             {
-                TryToEvade(IsSafe(ObjectManager.Player.ServerPosition.To2D()).SkillshotList, Game.CursorPos.To2D());
+                return;
+            }
+
+            var currentPath = ObjectManager.Player.GetWaypoints();
+            var safeResult = IsSafe(ObjectManager.Player.ServerPosition.To2D());
+            var safePath = IsSafePath(currentPath, 100);
+
+            if (!safePath.IsSafe)
+            {
+                if (!safeResult.IsSafe)
+                {
+                    TryToEvade(safeResult.SkillshotList, Game.CursorPos.To2D());
+                }
             }
         }
 
@@ -117,61 +75,64 @@ namespace Flowers_Yasuo.Evade
 
             foreach (var evadeSpell in EvadeSpellDatabase.Spells)
             {
-                if (evadeSpell.Enabled && evadeSpell.DangerLevel <= dangerLevel && evadeSpell.IsReady())
+                if (evadeSpell.Enabled && evadeSpell.DangerLevel <= dangerLevel)
                 {
-                    if (evadeSpell.Slot == SpellSlot.E)
+                    if (evadeSpell.IsReady())
                     {
-                        var dodgeList =
-                            GetEvadeTargets(evadeSpell)
-                                .Where(
-                                    x =>
-                                        IsSafe(Logic.PosAfterE(x).To2D()).IsSafe &&
-                                        (!Logic.UnderTower(Logic.PosAfterE(x)) ||
-                                         Menu.Item("ETower", true).GetValue<bool>()));
-
-                        if (dodgeList.Any())
+                        switch (evadeSpell.Slot)
                         {
-                            var dodgeTarget =
-                                dodgeList.Where(x => !x.HasBuff("YasuoDashWrapper"))
-                                    .MinOrDefault(i => Logic.PosAfterE(i).Distance(Pos.To3D()));
+                            case SpellSlot.W:
+                                var skillShotList =
+                                    HitBy.Where(
+                                        x => x.SpellData.CollisionObjects.Contains(CollisionObjectTypes.YasuoWall));
 
-                            if (dodgeTarget != null && dodgeTarget.DistanceToPlayer() <= Logic.E.Range &&
-                                SpellManager.CanCastE(dodgeTarget))
-                            {
-                                Logic.E.CastOnUnit(dodgeTarget, true);
-                            }
-                        }
-                    }
-
-                    if (evadeSpell.Slot == SpellSlot.W)
-                    {
-                        var skillShotList =
-                            HitBy.Where(
-                                x => x.SpellData.CollisionObjects.Contains(CollisionObjectTypes.YasuoWall));
-
-                        if (skillShotList.Any())
-                        {
-                            var willHitList =
-                                skillShotList.Where(
-                                    x =>
-                                        x.IsAboutToHit(
-                                            150 + evadeSpell.Delay,
-                                            ObjectManager.Player));
-
-                            if (willHitList.Any())
-                            {
-                                if (
-                                    willHitList.OrderByDescending(
-                                            x => dangerLevel)
-                                        .Any(
-                                            x =>
-                                                Logic.W.Cast(
-                                                    ObjectManager.Player.ServerPosition.Extend(x.Start.To3D(),
-                                                        300))))
+                                if (skillShotList.Any())
                                 {
-                                    return;
+                                    var willHitList =
+                                        skillShotList.Where(
+                                            x =>
+                                                x.IsAboutToHit(
+                                                    150 + evadeSpell.Delay,
+                                                    ObjectManager.Player));
+
+                                    if (willHitList.Any())
+                                    {
+                                        if (
+                                            willHitList.OrderByDescending(
+                                                    x => dangerLevel)
+                                                .Any(
+                                                    x =>
+                                                        Logic.W.Cast(
+                                                            ObjectManager.Player.ServerPosition.Extend(x.Start.To3D(),
+                                                                300))))
+                                        {
+                                            return;
+                                        }
+                                    }
                                 }
-                            }
+                                break;
+                            case SpellSlot.E:
+                                var dodgeList =
+                                    GetEvadeTargets(evadeSpell)
+                                        .Where(
+                                            x =>
+                                                IsSafe(Logic.PosAfterE(x).To2D()).IsSafe &&
+                                                (!Logic.UnderTower(Logic.PosAfterE(x)) ||
+                                                 Menu.Item("ETower", true).GetValue<bool>()));
+
+                                if (dodgeList.Any())
+                                {
+                                    var dodgeTarget =
+                                        dodgeList.Where(x => !x.HasBuff("YasuoDashWrapper"))
+                                            .MinOrDefault(i => Logic.PosAfterE(i).Distance(Pos.To3D()));
+
+                                    if (dodgeTarget != null && dodgeTarget.DistanceToPlayer() <= Logic.E.Range &&
+                                        SpellManager.CanCastE(dodgeTarget))
+                                    {
+                                        Logic.E.CastOnUnit(dodgeTarget, true);
+                                    }
+                                }
+                                break;
                         }
                     }
                 }

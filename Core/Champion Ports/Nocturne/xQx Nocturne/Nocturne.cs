@@ -12,17 +12,17 @@ using Geometry = Nocturne.Common.CommonGeometry;
 #endregion
 
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace Nocturne
+ using LeagueSharp.Common; 
+ namespace Nocturne
 {
     internal class Nocturne
     {
         public static void Init()
         {
-            Game_OnGameLoad(new EventArgs());
+            Game_OnGameLoad();
         }
 
-        private static void Game_OnGameLoad(EventArgs args)
+        private static void Game_OnGameLoad()
         {
             Champion.PlayerSpells.Init();
             Common.CommonItems.Init();

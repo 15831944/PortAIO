@@ -345,7 +345,7 @@ namespace SebbyLib.Movement
                 return HitChance.Medium;
             }
 
-            var wayPoint = input.Unit.Path.ToList().To2D().Last().To3D();
+            var wayPoint = input.Unit.GetWaypoints().Last().To3D();
             var delay = input.Delay
                         + (Math.Abs(input.Speed - float.MaxValue) > float.Epsilon
                                ? hero.Distance(input.From) / input.Speed
@@ -504,13 +504,13 @@ namespace SebbyLib.Movement
                 //input.Delay /= 2;
                 speed /= 1.5f;
             }
-            return GetPositionOnPath(input, input.Unit.Path.ToList().To2D(), speed);
+            return GetPositionOnPath(input, input.Unit.GetWaypoints(), speed);
         }
 
         internal static double GetAngle(Vector3 from, Obj_AI_Base target)
         {
             var C = target.ServerPosition.To2D();
-            var A = target.Path.ToList().To2D().Last();
+            var A = target.GetWaypoints().Last();
 
             if (C == A)
                 return 60;
@@ -1154,10 +1154,10 @@ namespace SebbyLib.Movement
 
             info.NewPathTick = Utils.TickCount;
 
-            if (sender.Path.Count() == 1 && !sender.IsMoving) // STOP MOVE DETECTION
+            if (args.Path.Count() == 1 && !sender.IsMoving) // STOP MOVE DETECTION
                 UnitTrackerInfoList.Find(x => x.NetworkId == sender.NetworkId).StopMoveTick = Utils.TickCount;
             else // SPAM CLICK LOGIC
-                info.PathBank.Add(new PathInfo() { Position = sender.Path.Last().To2D(), Time = Game.Time });
+                info.PathBank.Add(new PathInfo() { Position = args.Path.Last().To2D(), Time = Game.Time });
 
             if (info.PathBank.Count > 3)
                 info.PathBank.Remove(info.PathBank.First());

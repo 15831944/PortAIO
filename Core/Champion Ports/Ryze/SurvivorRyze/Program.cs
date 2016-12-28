@@ -10,9 +10,9 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SebbyLib;
-using SharpDX;
 using Color = SharpDX.Color;
 using HitChance = SebbyLib.Prediction.HitChance;
+using Orbwalking = SebbyLib.Orbwalking;
 using PredictionInput = SebbyLib.Prediction.PredictionInput;
 
 using EloBuddy; 
@@ -21,12 +21,7 @@ namespace SurvivorRyze
 {
     internal class Program
     {
-        public static void Main()
-        {
-            Game_OnGameLoad(new EventArgs());
-        }
-
-        private static void Game_OnGameLoad(EventArgs args)
+        public static void Game_OnGameLoad()
         {
             if (Player.ChampionName != ChampionName)
                 return;
@@ -165,10 +160,7 @@ namespace SurvivorRyze
             //UltimateMenu.AddItem(new MenuItem("DontRIfAlly", "Don't R if Ally is Near Target 'X' Range").SetValue(new Slider(700, 0, 2000)));
             //UltimateMenu.AddItem(new MenuItem("DontRUnderTurret", "Don't use R if enemy is Under Turret").SetValue(true));
             UltimateMenu.AddItem(
-                new MenuItem("UseRAndZhonyaEscape", "Use R + Zhonya to Escape (Untouched)").SetValue(false)
-                    .SetFontStyle(FontStyle.Bold, Color.Chartreuse));
-            UltimateMenu.AddItem(
-                new MenuItem("UseR", "Use R Automatically (Beta)").SetValue(new KeyBind("T".ToCharArray()[0],
+                new MenuItem("UseR", "Use R Automatically (Beta)").SetValue(new KeyBind("G".ToCharArray()[0],
                         KeyBindType.Press))
                     .SetTooltip("It'll Use the Ultimate if there's Ally turret nearby to teleport you to it"));
             //UltimateMenu.AddItem(new MenuItem("EnemiesAroundTarget", "Dont R If 'X' Enemies are around the Target").SetValue(new Slider(3, 0, 5)));
@@ -483,7 +475,6 @@ namespace SurvivorRyze
                 case Orbwalking.OrbwalkingMode.None:
                     Orbwalker.SetMovement(true);
                     Orbwalker.SetAttack(true);
-                    RZhonya();
                     break;
             }
             if (Menu.Item("UseR").GetValue<KeyBind>().Active)
@@ -655,33 +646,33 @@ namespace SurvivorRyze
         private static float QGetRealDamage(Obj_AI_Base target)
         {
             if (!target.HasBuff("RyzeE"))
-                return QDefaultDamage(target);
+                return Q.GetDamage(target);
             if (((E.IsReady() && !Q.IsReady()) || (E.IsReady() && Q.IsReady()) || (!E.IsReady() && Q.IsReady())) &&
                 target.HasBuff("RyzeE"))
             {
                 switch (E.Level)
                 {
                     case 1:
-                        QRealDamage = QDefaultDamage(target)/40*100;
+                        QRealDamage = Q.GetDamage(target)/40*100;
                         break;
                     case 2:
-                        QRealDamage = QDefaultDamage(target)/55*100;
+                        QRealDamage = Q.GetDamage(target)/55*100;
                         break;
                     case 3:
-                        QRealDamage = QDefaultDamage(target)/70*100;
+                        QRealDamage = Q.GetDamage(target)/70*100;
                         break;
                     case 4:
-                        QRealDamage = QDefaultDamage(target)/85*100;
+                        QRealDamage = Q.GetDamage(target)/85*100;
                         break;
                     case 5:
-                        QRealDamage = QDefaultDamage(target)/100*100;
+                        QRealDamage = Q.GetDamage(target)/100*100;
                         break;
                 }
                 //Chat.Print("Inside V2 qRealDamage:" + QRealDamage);
                 return QRealDamage;
             }
-            //Chat.Print("Inside else at end:" + QDefaultDamage(target));
-            return QDefaultDamage(target);
+            //Chat.Print("Inside else at end:" + Q.GetDamage(target));
+            return Q.GetDamage(target);
         }
 
         private static void ComboPlusCheck()
@@ -745,12 +736,13 @@ namespace SurvivorRyze
                 }
         }
 
-        private static float QDefaultDamage(Obj_AI_Base target)
+        private static void ModeChanger()
         {
-            var damage = Player.CalcDamage(target, Damage.DamageType.Magical,
-                new[] {60, 85, 110, 135, 160, 185}[Player.GetSpell(SpellSlot.Q).Level - 1] +
-                Player.TotalMagicalDamage/45*100 + Player.Mana/3*100);
-            return (float) damage;
+            if (Menu.Item("ModeChangerOnLowHP").GetValue<bool>())
+                if (Player.HealthPercent < Menu.Item("ModeChangerHPToChange").GetValue<Slider>().Value)
+                {
+                    //
+                }
         }
 
         private static void Combo()
@@ -765,6 +757,7 @@ namespace SurvivorRyze
             // If Target's not in Q Range or there's no target or target's invulnerable don't fuck with him
             if ((target == null) || !target.IsValidTarget(Q.Range) || target.IsInvulnerable)
                 return;
+
             switch (Menu.Item("ComboMode").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
@@ -994,7 +987,7 @@ namespace SurvivorRyze
                         if (ryzeebuffed != null)
                         {
                             if ((ryzeebuffed.Health <
-                                 QDefaultDamage(ryzeebuffed) + E.GetDamage(ryzeebuffed) + QDefaultDamage(ryzeebuffed)) &&
+                                 Q.GetDamage(ryzeebuffed) + E.GetDamage(ryzeebuffed) + Q.GetDamage(ryzeebuffed)) &&
                                 ryzeebuffed.IsValidTarget(E.Range))
                             {
                                 Q.Cast(ryzeebuffed);
@@ -1004,11 +997,10 @@ namespace SurvivorRyze
                                     Q.Cast(ryzeebuffed);
                             }
                         }
-                        else if (ryzenotebuffed != null)
+                        else if (ryzeebuffed == null)
                         {
                             if ((ryzenotebuffed.Health <
-                                 QDefaultDamage(ryzenotebuffed) + E.GetDamage(ryzenotebuffed) +
-                                 QDefaultDamage(ryzenotebuffed)) &&
+                                 Q.GetDamage(ryzenotebuffed) + E.GetDamage(ryzenotebuffed) + Q.GetDamage(ryzenotebuffed)) &&
                                 ryzenotebuffed.IsValidTarget(E.Range))
                             {
                                 Q.Cast(ryzenotebuffed);
@@ -1023,55 +1015,6 @@ namespace SurvivorRyze
                         }
                 }
         } // LaneClear End
-
-        private static void RZhonya()
-        {
-            if ((Player.HealthPercent < 50) && Menu.Item("UseRAndZhonyaEscape").GetValue<bool>() && R.Instance.IsReady() &&
-                Zhonya.IsOwned(Player))
-                if (Zhonya.IsReady())
-                {
-                    switch (R.Level)
-                    {
-                        case 1:
-                            RangeR = 1750f;
-                            break;
-                        case 2:
-                            RangeR = 3000f;
-                            break;
-                    }
-                    if (GrabDefensePosition() == Player.ServerPosition)
-                        return;
-                    R.Cast(GrabDefensePosition());
-                    LeagueSharp.Common.Utility.DelayAction.Add(145, delegate
-                    {
-                        if (Player.HasBuff("RyzeRChannel")) Zhonya.Cast();
-                    });
-                }
-        }
-
-        private static Vector3 GrabDefensePosition()
-        {
-            switch (R.Level)
-            {
-                case 1:
-                    RangeR = 1750f;
-                    break;
-                case 2:
-                    RangeR = 3000f;
-                    break;
-            }
-            var NearTurret = ObjectManager.Get<Obj_AI_Turret>()
-                .FirstOrDefault(turret => turret.IsAlly && (turret.Distance(Player.Position) <= RangeR));
-
-            var NearAlly =
-                HeroManager.Allies.FirstOrDefault(
-                    ally => ally.CountEnemiesInRange(1500) <= 0 && ally.Distance(Player) <= RangeR);
-            if (NearTurret != null)
-                return NearTurret.ServerPosition;
-            if (NearAlly != null)
-                return NearAlly.ServerPosition;
-            return Player.ServerPosition;
-        }
 
         private static void REscape()
         {
@@ -1098,7 +1041,7 @@ namespace SurvivorRyze
             if (Q.IsReady() || (Player.Mana <= Q.Instance.SData.Mana + E.Instance.SData.Mana))
                 damage += QGetRealDamage(enemy);
             else if (Q.IsReady() || (Player.Mana <= Q.Instance.SData.Mana))
-                damage += QDefaultDamage(enemy);
+                damage += Q.GetDamage(enemy);
 
             if (W.IsReady() || (Player.Mana <= W.Instance.SData.Mana + W.Instance.SData.Mana))
                 damage += W.GetDamage(enemy) + W.GetDamage(enemy);
@@ -1136,8 +1079,7 @@ namespace SurvivorRyze
             Protobelt = new Items.Item(3152, 850f),
             GLP800 = new Items.Item(3030, 800f),
             Hextech = new Items.Item(3146, 700f),
-            Seraph = new Items.Item(3040, 0),
-            Zhonya = new Items.Item(3157, 0);
+            Seraph = new Items.Item(3040, 0);
 
         #endregion
 

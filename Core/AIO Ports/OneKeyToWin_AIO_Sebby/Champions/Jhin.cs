@@ -157,20 +157,20 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             {
                 OktwCommon.blockMove = true;
                 OktwCommon.blockAttack = true;
-                Orbwalking.Attack = false;
-                Orbwalking.Move = false;
+                SebbyLib.Orbwalking.Attack = false;
+                SebbyLib.Orbwalking.Move = false;
                 return;
             }
             else
             {
                 OktwCommon.blockMove = false;
                 OktwCommon.blockAttack = false;
-                Orbwalking.Attack = true;
-                Orbwalking.Move = true;
+                SebbyLib.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Move = true;
             }
 
 
-            if (Program.LagFree(4) && E.IsReady() && Orbwalking.CanMove(50))
+            if (Program.LagFree(4) && E.IsReady() && SebbyLib.Orbwalking.CanMove(50))
                 LogicE();
 
             if (Program.LagFree(2) && Q.IsReady() && Config.Item("autoQ", true).GetValue<bool>())
@@ -358,7 +358,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 }
 
             }
-            else if(!Orbwalking.CanAttack() && !ObjectManager.Player.Spellbook.IsAutoAttacking)
+            else if(!SebbyLib.Orbwalking.CanAttack() && !ObjectManager.Player.Spellbook.IsAutoAttacking)
             {
                 var t = torb as AIHeroClient;
                 if (t.Health < GetQdmg(t) + GetWdmg(t))

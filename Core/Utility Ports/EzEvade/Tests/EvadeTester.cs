@@ -594,7 +594,7 @@ using LeagueSharp.Common;
             if (!hero.IsMe)
                 return;
 
-            if (args.Order == GameObjectOrder.Stop)
+            if (args.Order == GameObjectOrder.HoldPosition)
             {
                 var path = myHero.Path;
                 var heroPoint = ObjectCache.myHeroCache.serverPos2D;

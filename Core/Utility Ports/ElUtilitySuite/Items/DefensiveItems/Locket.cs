@@ -1,11 +1,10 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace ElUtilitySuite.Items.DefensiveItems
+ namespace ElUtilitySuite.Items.DefensiveItems
 {
     using System;
     using System.Linq;
 
-    using ElUtilitySuite.Logging;
     using ElUtilitySuite.Vendor.SFX;
 
     using LeagueSharp;
@@ -97,13 +96,16 @@ namespace ElUtilitySuite.Items.DefensiveItems
                             || ally.HealthPercent < this.Menu.Item("locket-min-health").GetValue<Slider>().Value)
                         {
                             Items.UseItem((int)this.Id, ally);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("[ELUTILITYSUITE - LOCKET] Used for: {0} - health percentage: {1}%", ally.ChampionName, (int)ally.HealthPercent);
                         }
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
             }
             catch (Exception e)
             {
-                Logging.AddEntry(LoggingEntryType.Error, "@Locket.cs: An error occurred: {0}", e);
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 

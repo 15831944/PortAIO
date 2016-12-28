@@ -1,6 +1,6 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace ElUtilitySuite.Summoners
+ namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Collections.Generic;
@@ -923,12 +923,12 @@ namespace ElUtilitySuite.Summoners
                                 this.Menu.Item("CleanseMaxDelay1").GetValue<Slider>().Value),
                             () =>
                                 {
-                                    ObjectManager.Player.Spellbook.CastSpell(item.Slot, ally);
+                                    Player.Spellbook.CastSpell(item.Slot, ally);
                                 });
                     }
                     else
                     {
-                        ObjectManager.Player.Spellbook.CastSpell(item.Slot, ally);
+                        Player.Spellbook.CastSpell(item.Slot, ally);
                     }
                 }
             }

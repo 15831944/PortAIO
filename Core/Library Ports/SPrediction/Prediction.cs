@@ -68,7 +68,7 @@ namespace SPrediction
                 SpellRange = s.Range;
                 SpellCollisionable = s.Collision;
                 SpellSkillShotType = s.Type;
-                Path = Target.Path.ToList().To2D();
+                Path = Target.GetWaypoints();
                 if (Target is AIHeroClient)
                 {
                     AIHeroClient t = Target as AIHeroClient;
@@ -97,7 +97,7 @@ namespace SPrediction
                 SpellRange = range;
                 SpellCollisionable = collision;
                 SpellSkillShotType = type;
-                Path = Target.Path.ToList().To2D();
+                Path = Target.GetWaypoints();
                 if (Target is AIHeroClient)
                 {
                     AIHeroClient t = Target as AIHeroClient;
@@ -156,7 +156,7 @@ namespace SPrediction
             {
                 this.CollisionResult = Collision.GetCollisions(this.Input.From.To2D(), this.CastPosition, this.Input.SpellRange, this.Input.SpellWidth, this.Input.SpellDelay, this.Input.SpellMissileSpeed);
                 this.CheckCollisions();
-                //this.CheckOutofRange(checkDodge);
+                this.CheckOutofRange(checkDodge);
             }
 
             #endregion
@@ -171,7 +171,7 @@ namespace SPrediction
 
             private void CheckOutofRange(bool checkDodge)
             {
-                if (ObjectManager.Player.Distance(Input.Target) > Input.SpellRange)
+                if (this.Input.RangeCheckFrom.To2D().Distance(this.CastPosition) > this.Input.SpellRange - (checkDodge ? GetArrivalTime(this.Input.From.To2D().Distance(this.CastPosition), this.Input.SpellDelay, this.Input.SpellMissileSpeed) * this.Unit.MoveSpeed * (100 - ConfigMenu.MaxRangeIgnore) / 100f : 0))
                     this.HitChance = HitChance.OutOfRange;
             }
 
@@ -255,6 +255,7 @@ namespace SPrediction
         }
 
         #endregion
+
         #region Internal Methods
 
         /// <summary>
@@ -281,7 +282,7 @@ namespace SPrediction
         /// <returns>Prediction result as <see cref="Prediction.Result"/></returns>
         internal static Result GetPrediction(AIHeroClient target, float width, float delay, float missileSpeed, float range, bool collisionable, SkillshotType type)
         {
-            return GetPrediction(target, width, delay, missileSpeed, range, collisionable, type, target.Path.ToList().To2D(), target.AvgMovChangeTime(), target.LastMovChangeTime(), target.AvgPathLenght(), target.LastAngleDiff(), ObjectManager.Player.ServerPosition.To2D(), ObjectManager.Player.ServerPosition.To2D());
+            return GetPrediction(target, width, delay, missileSpeed, range, collisionable, type, target.GetWaypoints(), target.AvgMovChangeTime(), target.LastMovChangeTime(), target.AvgPathLenght(), target.LastAngleDiff(), ObjectManager.Player.ServerPosition.To2D(), ObjectManager.Player.ServerPosition.To2D());
         }
 
         /// <summary>
@@ -354,7 +355,7 @@ namespace SPrediction
                     if (avgp < 400 && movt < 100 && path.PathLength() <= avgp)
                     {
                         result.HitChance = HitChance.High;
-                        result.CastPosition = target.Path.ToList().To2D().Last();
+                        result.CastPosition = path.Last();
                         result.UnitPosition = result.CastPosition;
                         result.Lock();
 
@@ -421,7 +422,7 @@ namespace SPrediction
             }
             else
             {
-                result = GetPrediction(target, width, delay, missileSpeed, range, collisionable, type, target.Path.ToList().To2D(), 0, 0, 0, 0, from, rangeCheckFrom);
+                result = GetPrediction(target, width, delay, missileSpeed, range, collisionable, type, target.GetWaypoints(), 0, 0, 0, 0, from, rangeCheckFrom);
                 result.Lock(false);
             }
             return result;
@@ -487,7 +488,7 @@ namespace SPrediction
             {
                 if (movt > 50)
                 {
-                    if (avgt >= t + Game.Ping)
+                    if (avgt >= t * 1.25f)
                     {
                         if (anglediff < 30)
                             return HitChance.VeryHigh;
@@ -555,8 +556,6 @@ namespace SPrediction
             float pathTime = 0f;
             int[] pathBounds = new int[] { -1, -1 };
 
-            path = target.Path.ToList().To2D();
-
             //find bounds
             for (int i = 0; i < path.Count - 1; i++)
             {
@@ -580,7 +579,7 @@ namespace SPrediction
                 {
                     Vector2 direction = (path[k + 1] - path[k]).Normalized();
                     float distance = width;
-                    float extender = target.BoundingRadius;
+                    float extender = 0;
 
                     if (type == SkillshotType.SkillshotLine)
                         extender = width;
@@ -592,10 +591,10 @@ namespace SPrediction
                         Vector2 pCenter = path[k] + (direction * distance * i);
                         Vector2 pA = pCenter - (direction * extender);
                         Vector2 pB = pCenter + (direction * extender);
-
+                        
                         float flytime = missileSpeed != 0 ? from.Distance(pCenter) / missileSpeed : 0f;
                         float t = flytime + delay + Game.Ping / 2000f + ConfigMenu.SpellDelay / 1000f;
-
+                        
                         Vector2 currentPosition = target.ServerPosition.To2D();
 
                         float arriveTimeA = currentPosition.Distance(pA) / moveSpeed;
@@ -620,7 +619,6 @@ namespace SPrediction
 
         #endregion
 
-
         #region Public Methods
 
         /// <summary>
@@ -633,7 +631,7 @@ namespace SPrediction
         /// <returns></returns>
         public static Vector2 GetFastUnitPosition(Obj_AI_Base target, float delay, float missileSpeed = 0, Vector2? from = null, float distanceSet = 0)
         {
-            List<Vector2> path = target.Path.ToList().To2D();
+            List<Vector2> path = target.GetWaypoints();
             if (from == null)
                 from = ObjectManager.Player.ServerPosition.To2D();
 

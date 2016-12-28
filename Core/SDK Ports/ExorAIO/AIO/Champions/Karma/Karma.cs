@@ -108,15 +108,15 @@ namespace ExorAIO.Champions.Karma
                     return;
                 }
 
-                var hero = args.Target as AIHeroClient;
-                if (hero != null && hero.IsAlly)
+                if (sender.IsEnemy && args.Target != null
+                    && GameObjects.AllyHeroes.Any(a => a.NetworkId == args.Target.NetworkId))
                 {
-                    if (Vars.E.IsReady() && hero.IsValidTarget(Vars.E.Range, false)
+                    if (Vars.E.IsReady() && ((AIHeroClient)args.Target).IsValidTarget(Vars.E.Range, false)
                         && Vars.Menu["spells"]["e"]["logical"].GetValue<MenuBool>().Value
-                        && Vars.Menu["spells"]["e"]["whitelist"][hero.ChampionName.ToLower()]
+                        && Vars.Menu["spells"]["e"]["whitelist"][((AIHeroClient)args.Target).ChampionName.ToLower()]
                                .GetValue<MenuBool>().Value)
                     {
-                        Vars.E.CastOnUnit(hero);
+                        Vars.E.CastOnUnit((AIHeroClient)args.Target);
                     }
                 }
             }

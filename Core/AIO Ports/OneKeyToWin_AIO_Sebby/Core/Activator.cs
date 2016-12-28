@@ -12,7 +12,7 @@ using EloBuddy;
     class Activator
     {
         private Menu Config = Program.Config;
-        public static Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private AIHeroClient Player { get { return ObjectManager.Player; } }
 
 
@@ -177,7 +177,7 @@ using EloBuddy;
             Config.SubMenu("Activator OKTW©").SubMenu("Cleansers").SubMenu("Buff type").AddItem(new MenuItem("Taunt", "Taunt").SetValue(true));
             Config.SubMenu("Activator OKTW©").SubMenu("Cleansers").SubMenu("Buff type").AddItem(new MenuItem("Blind", "Blind").SetValue(true));
             Game.OnUpdate += Game_OnGameUpdate;
-            Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+            SebbyLib.Orbwalking.AfterAttack += Orbwalking_AfterAttack;
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             Obj_AI_Base.OnSpellCast += Obj_AI_Base_OnProcessSpellCast;
             //Drawing.OnDraw += Drawing_OnDraw;
@@ -188,7 +188,7 @@ using EloBuddy;
             if (Config.Item("HydraTitanic").GetValue<bool>() && Program.Combo && HydraTitanic.IsReady() && target.IsValid<AIHeroClient>())
             {
                 HydraTitanic.Cast();
-                Orbwalking.ResetAutoAttackTimer();
+                SebbyLib.Orbwalking.ResetAutoAttackTimer();
             }
         }
 

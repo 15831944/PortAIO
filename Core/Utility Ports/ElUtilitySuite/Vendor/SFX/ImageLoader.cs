@@ -20,9 +20,7 @@
 
 #endregion
 
-using EloBuddy; 
-using LeagueSharp.Common; 
-namespace ElUtilitySuite.Vendor.SFX
+using EloBuddy; namespace ElUtilitySuite.Vendor.SFX
 {
     using System;
     using System.Drawing;
@@ -135,19 +133,17 @@ namespace ElUtilitySuite.Vendor.SFX
                 {
                     Directory.CreateDirectory(CacheDir);
                 }
-                Console.WriteLine(Game.Version);
-                string path = Path.Combine(CacheDir, $"1{Game.Version.Substring(0, 4)}");
+                string path = Path.Combine(CacheDir, string.Format("{0}", Game.Version));
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
-                Console.WriteLine(Game.Version);
                 path = Path.Combine(path, uniqueId);
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
-                return Path.Combine(path, $"{name}.png");
+                return Path.Combine(path, string.Format("{0}.png", name));
             }
             catch (Exception e)
             {

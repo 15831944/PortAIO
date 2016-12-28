@@ -1,7 +1,4 @@
-#pragma warning disable 67
-using EloBuddy;
-using LeagueSharp.Common;
-namespace ElUtilitySuite
+using EloBuddy; namespace ElUtilitySuite
 {
     using System;
     using System.Drawing;
@@ -10,7 +7,6 @@ namespace ElUtilitySuite
     using System.Reflection;
     using System.Security.Permissions;
 
-    using ElUtilitySuite.Logging;
     using ElUtilitySuite.Vendor.SFX;
 
     using LeagueSharp;
@@ -107,13 +103,16 @@ namespace ElUtilitySuite
                 foreach (var ally in HeroManager.Allies)
                 {
                     IncomingDamageManager.AddChampion(ally);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(@"[ELUTILITYSUITE] loaded champions: {0}", ally.ChampionName);
                 }
+                Console.ForegroundColor = ConsoleColor.White;
 
                 menu.AddItem(new MenuItem("seperator1", ""));
                 menu.AddItem(new MenuItem("usecombo", "Combo (Active)").SetValue(new KeyBind(32, KeyBindType.Press)));
                 menu.AddItem(new MenuItem("seperator", ""));
                 menu.AddItem(new MenuItem("Versionnumber", $"Version: {ScriptVersion}"));
-                menu.AddItem(new MenuItem("by.jQuery", "jQuery / ChewyMoon"));
+                menu.AddItem(new MenuItem("by.jQuery", "jQuery"));
                 menu.AddToMainMenu();
 
                 Menu = menu;

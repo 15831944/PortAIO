@@ -8,6 +8,7 @@ using LeagueSharp.Common;
 using ShineCommon;
 
 //typedefs
+using Orbwalking = MidlaneSharp.Orbwalking;
 using Color = System.Drawing.Color;
 
 using EloBuddy; 

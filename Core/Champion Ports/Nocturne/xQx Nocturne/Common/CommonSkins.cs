@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace Nocturne.Common
+ using LeagueSharp.Common; 
+ namespace Nocturne.Common
 {
     internal class CommonSkins
     {
@@ -22,7 +22,6 @@ namespace Nocturne.Common
                     {
                         if (!args.GetNewValue<bool>())
                         {
-                            //ObjectManager.//Player.SetSkin(ObjectManager.Player.BaseSkinName, ObjectManager.Player.SkinId);
                         }
                     };
 
@@ -41,7 +40,6 @@ namespace Nocturne.Common
         {
             if (MenuLocal.Item("Settings.Skin").GetValue<bool>())
             {
-                //ObjectManager.//Player.SetSkin(ObjectManager.Player.BaseSkinName, MenuLocal.Item("Settings.SkinID").GetValue<StringList>().SelectedIndex);
             }
         }
     }

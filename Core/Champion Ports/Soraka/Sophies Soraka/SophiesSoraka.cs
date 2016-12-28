@@ -19,23 +19,23 @@
 //   The sophies soraka.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace Sophies_Soraka
+ using LeagueSharp.Common; 
+ namespace Sophies_Soraka
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
     using System.Reflection;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
     /// <summary>
     ///     The sophies soraka.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
         Justification = "Reviewed. Suppression is OK here.")]
     internal class SophiesSoraka
     {
@@ -68,7 +68,13 @@ namespace Sophies_Soraka
         /// <summary>
         ///     Gets a value indicating whether to use packets.
         /// </summary>
-        public static bool Packets => false;
+        public static bool Packets
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the q.
@@ -104,20 +110,19 @@ namespace Sophies_Soraka
         /// <param name="args">
         ///     The args.
         /// </param>
-        public static void OnGameLoad(EventArgs args)
+        public static void OnGameLoad()
         {
             if (ObjectManager.Player.ChampionName != "Soraka")
             {
                 return;
             }
 
-            Q = new Spell(SpellSlot.Q, 970);
+            Q = new Spell(SpellSlot.Q, 750);
             W = new Spell(SpellSlot.W, 550);
-            E = new Spell(SpellSlot.E, 925);
+            E = new Spell(SpellSlot.E, 900);
             R = new Spell(SpellSlot.R);
-
-            Q.SetSkillshot(0.283f, 210, 1100, false, SkillshotType.SkillshotCircle);
-
+            
+            Q.SetSkillshot(0.3f, 125, 1750, false, SkillshotType.SkillshotCircle);
             E.SetSkillshot(0.4f, 70f, 1750, false, SkillshotType.SkillshotCircle);
 
             CreateMenu();
@@ -137,8 +142,7 @@ namespace Sophies_Soraka
         /// <param name="msg">The message.</param>
         public static void PrintChat(string msg)
         {
-            Chat.Print("<font color='#F778A1'><b>Sophie's Soraka:</b></font> <font color='#FFFFFF'>" + msg +
-                           "</font>");
+            Chat.Print("<font color='#F778A1'><b>Sophie's Soraka:</b></font> <font color='#FFFFFF'>" + msg + "</font>");
         }
 
         #endregion
@@ -151,21 +155,20 @@ namespace Sophies_Soraka
         /// <param name="gapcloser">
         ///     The gapcloser.
         /// </param>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
             Justification = "Reviewed. Suppression is OK here.")]
         private static void AntiGapcloserOnOnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
             var unit = gapcloser.Sender;
-            var prediction = GetQPrediction(unit);
 
-            if (Menu.Item("useQGapcloser").GetValue<bool>() && unit.IsValidTarget(Q.Range) && Q.IsReady() && prediction.Hitchance >= HitChance.High)
+            if (Menu.Item("useQGapcloser").GetValue<bool>() && unit.IsValidTarget(Q.Range) && Q.IsReady())
             {
-                Q.Cast(prediction.CastPosition);
+                Q.Cast(unit, Packets);
             }
 
             if (Menu.Item("useEGapcloser").GetValue<bool>() && unit.IsValidTarget(E.Range) && E.IsReady())
             {
-                E.Cast(unit);
+                E.Cast(unit, Packets);
             }
         }
 
@@ -180,8 +183,8 @@ namespace Sophies_Soraka
             }
 
             if (ObjectManager.Get<AIHeroClient>()
-                .Any(
-                    x =>
+                    .Any(
+                        x =>
                         x.IsAlly && x.IsValidTarget(float.MaxValue, false)
                         && x.HealthPercent < Menu.Item("autoRPercent").GetValue<Slider>().Value))
             {
@@ -213,13 +216,7 @@ namespace Sophies_Soraka
 
             var healthPercent = Menu.Item("autoWPercent").GetValue<Slider>().Value;
 
-            var canidates =
-                ObjectManager.Get<AIHeroClient>()
-                    .Where(
-                        x =>
-                            x.IsValidTarget(W.Range, false) && x.IsAlly && x.HealthPercent < healthPercent &&
-                            !x.IsRecalling());
-
+            var canidates = ObjectManager.Get<AIHeroClient>().Where(x => x.IsValidTarget(W.Range, false) && x.IsAlly && x.HealthPercent < healthPercent);
             var wMode = Menu.Item("HealingPriority").GetValue<StringList>().SelectedValue;
 
             switch (wMode)
@@ -240,7 +237,7 @@ namespace Sophies_Soraka
 
             var target = dontWInFountain ? canidates.FirstOrDefault(x => !x.InFountain()) : canidates.FirstOrDefault();
 
-            if (target != null && !ObjectManager.Player.IsRecalling())
+            if (target != null)
             {
                 W.CastOnUnit(target);
             }
@@ -259,25 +256,16 @@ namespace Sophies_Soraka
             {
                 return;
             }
-            var prediction = GetQPrediction(target);
-            if (useQ && Q.IsReady() && prediction.Hitchance >= HitChance.High)
+
+            if (useQ && Q.IsReady())
             {
-                Q.Cast(prediction.CastPosition);
+                Q.Cast(target, Packets);
             }
 
             if (useE && E.IsReady())
             {
-                E.Cast(target);
+                E.Cast(target, Packets);
             }
-        }
-
-
-        public static PredictionOutput GetQPrediction(Obj_AI_Base target)
-        {
-            float divider = target.Position.Distance(ObjectManager.Player.Position) / Q.Range;
-            Q.Delay = 0.2f + 0.8f * divider;
-            var prediction = Q.GetPrediction(target, true);
-            return prediction;
         }
 
         /// <summary>
@@ -323,13 +311,7 @@ namespace Sophies_Soraka
             wMenu.AddItem(
                 new MenuItem("HealingPriority", "Healing Priority").SetValue(
                     new StringList(
-                        new[]
-                        {
-                            "Most AD",
-                            "Most AP",
-                            "Least Health",
-                            "Least Health (Prioritize Squishies)"
-                        },
+                        new[] { "Most AD", "Most AP", "Least Health", "Least Health (Prioritize Squishies)" }, 
                         3)));
             healingMenu.AddSubMenu(wMenu);
 
@@ -445,12 +427,12 @@ namespace Sophies_Soraka
 
             if (useQ && Q.IsReady())
             {
-                Q.Cast(target);
+                Q.Cast(target, Packets);
             }
 
             if (useE && E.IsReady())
             {
-                E.Cast(target);
+                E.Cast(target, Packets);
             }
         }
 
@@ -464,7 +446,7 @@ namespace Sophies_Soraka
         ///     The args.
         /// </param>
         private static void InterrupterOnOnPossibleToInterrupt(
-            AIHeroClient sender,
+            AIHeroClient sender, 
             Interrupter2.InterruptableTargetEventArgs args)
         {
             var unit = sender;
@@ -485,7 +467,7 @@ namespace Sophies_Soraka
                 return;
             }
 
-            E.Cast(unit);
+            E.Cast(unit, Packets);
         }
 
         /// <summary>
@@ -494,14 +476,12 @@ namespace Sophies_Soraka
         /// <param name="args">The <see cref="Orbwalking.BeforeAttackEventArgs" /> instance containing the event data.</param>
         private static void OrbwalkingOnBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (args.Target.IsValid<Obj_AI_Minion>() && !Menu.Item("AttackMinions").IsActive() &&
-                ObjectManager.Player.CountAlliesInRange(1200) > 0)
+            if (args.Target.IsValid<Obj_AI_Minion>() && !Menu.Item("AttackMinions").IsActive() && ObjectManager.Player.CountAlliesInRange(1200) > 0)
             {
                 args.Process = false;
             }
 
-            if (args.Target.IsValid<AIHeroClient>() && !Menu.Item("AttackChampions").GetValue<bool>() &&
-                ObjectManager.Player.CountAlliesInRange(1000) > 0)
+            if (args.Target.IsValid<AIHeroClient>() &&  !Menu.Item("AttackChampions").GetValue<bool>() && ObjectManager.Player.CountAlliesInRange(1000) > 0)
             {
                 args.Process = false;
             }

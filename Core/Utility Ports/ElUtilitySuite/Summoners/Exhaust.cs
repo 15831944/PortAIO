@@ -1,12 +1,10 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace ElUtilitySuite.Summoners
+ namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using ElUtilitySuite.Logging;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -81,7 +79,7 @@ namespace ElUtilitySuite.Summoners
                 foreach (var x in HeroManager.Enemies)
                 {
                     exhaustMenu.AddItem(
-                        new MenuItem($"exhauston{x.BaseSkinName}", "Use on " + x.ChampionName)).SetValue(true);
+                        new MenuItem($"exhauston{x.CharData.BaseSkinName}", "Use on " + x.ChampionName)).SetValue(true);
                 }
             }
 
@@ -137,9 +135,9 @@ namespace ElUtilitySuite.Summoners
 
                 Random = new Random(Environment.TickCount);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Logging.AddEntry(LoggingEntryType.Error, "@Exhaust.cs: An error occurred: {0}", e);
+                Console.WriteLine($"Failed to load exhaust");
             }
         }
 
@@ -160,7 +158,7 @@ namespace ElUtilitySuite.Summoners
             if (!sender.IsEnemy || !this.ExhaustSpell.IsInRange(sender)
                 || !this.Spells.Any(
                     x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
-                || !this.Menu.Item($"exhauston{sender.BaseSkinName}").IsActive() || args.SData.Name.ToLower().Contains("lux"))
+                || !this.Menu.Item($"exhauston{sender.CharData.BaseSkinName}").IsActive() || args.SData.Name.ToLower().Contains("lux"))
             {
                 return;
             }
@@ -168,7 +166,7 @@ namespace ElUtilitySuite.Summoners
             if (this.ExhaustSpell.IsReady())
             {
                LeagueSharp.Common.Utility.DelayAction.Add(Random.Next(50, 100), () => this.ExhaustSpell.Cast(sender));
-               Logging.AddEntry(LoggingEntryType.Debug, "@Exhaust.cs: Use exhaust on: {0} - for spell {1}", sender.BaseSkinName, args.SData.Name);
+               Console.WriteLine($"Use exhaust on: {sender.CharData.BaseSkinName} - for spell {args.SData.Name}");
             }
         }
 

@@ -24,13 +24,13 @@ using EloBuddy;
         public static void OnLoad()
         {
             Game.OnUpdate += OnUpdate;
-            Orbwalking.OnNonKillableMinion += OnNonKillableMinion;
+            MyOrbwalker.OnNonKillableMinion += OnNonKillableMinion;
         }
 
         private static void OnNonKillableMinion(AttackableUnit minion)
         {
             var objaiminion = (Obj_AI_Base) minion;
-            if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && objaiminion.IsRendKillable())
+            if (Program.Orbwalker.ActiveMode == MyOrbwalker.OrbwalkingMode.LaneClear && objaiminion.IsRendKillable())
             {
                 Program.E.Cast();
             }
@@ -62,7 +62,7 @@ using EloBuddy;
 
             switch (Program.Orbwalker.ActiveMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case MyOrbwalker.OrbwalkingMode.Combo:
                 {
                     if (Program.E.IsReady())
                     {
@@ -95,7 +95,7 @@ using EloBuddy;
                     }
                 }
                     break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
+                case MyOrbwalker.OrbwalkingMode.LaneClear:
                     //E Laneclear
                     if (Program.LaneClearMenu.Item("LaneclearE").GetValue<bool>() &&
                         (ObjectManager.Player.ManaPercent <

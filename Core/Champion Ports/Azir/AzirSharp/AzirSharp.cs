@@ -29,6 +29,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
+using DeathWalker = DetuksSharp.DeathWalker;
 
 
 using EloBuddy; 
@@ -53,8 +54,6 @@ using EloBuddy;
 
         }
 
-        internal static Orbwalking.Orbwalker Orbwalker;
-
         private static void onLoad()
         {
 
@@ -69,7 +68,7 @@ using EloBuddy;
                 Config = new Menu("Azir - Sharp", "Azir", true);
                 //Orbwalker
                 Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
-                Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
+                DeathWalker.AddToMenu(Config.SubMenu("Orbwalker"));
                 //TS
                 var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
                 TargetSelector.AddToMenu(TargetSelectorMenu);
@@ -123,8 +122,9 @@ using EloBuddy;
 
                 Drawing.OnEndScene += OnEndScene;
 
-                //  Game.OnGameSendPacket += OnGameSendPacket;
-                // Game.OnGameProcessPacket += OnGameProcessPacket;
+              //  Game.OnGameSendPacket += OnGameSendPacket;
+               // Game.OnGameProcessPacket += OnGameProcessPacket;
+                DeathWalker.azir = true;
                 Azir.setSkillShots();
             }
             catch (Exception ex)
@@ -183,19 +183,19 @@ using EloBuddy;
                     }
                 }*/
 
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                if (DeathWalker.CurrentMode == DeathWalker.Mode.Combo)
                 {
                     AIHeroClient target = TargetSelector.GetTarget(1200, TargetSelector.DamageType.Magical);
                     if(target != null)
                         Azir.doCombo(target);
                 }
 
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+                if (DeathWalker.CurrentMode == DeathWalker.Mode.Harass)
                 {
                     //Azir.doAttack();
                 }
 
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                if (DeathWalker.CurrentMode == DeathWalker.Mode.LaneClear)
                 {
                     //Azir.doAttack();
                 }
@@ -222,7 +222,7 @@ using EloBuddy;
 
                 if (Config.Item("fullin").GetValue<KeyBind>().Active)
                 {
-                    Orbwalking.MoveTo(Game.CursorPos);
+                    DeathWalker.deathWalk(Game.CursorPos);
                     AIHeroClient target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
                     if(target != null)
                             Azir.goFullIn(target);
@@ -240,7 +240,7 @@ using EloBuddy;
             if (Config.Item("noDraw").GetValue<bool>())
                 return;
             if(Config.Item("drawQmax").GetValue<bool>())
-                Render.Circle.DrawCircle(Azir.Player.Position, 1150, (Orbwalking.CanAttack()) ? Color.Red : Color.Blue);
+                Render.Circle.DrawCircle(Azir.Player.Position, 1150, (DeathWalker.canAttack()) ? Color.Red : Color.Blue);
 
             if (Config.Item("drawSoliAA").GetValue<bool>() || Config.Item("drawSoliCtrl").GetValue<bool>())
                 foreach (var solid in Azir.MySoldiers)
@@ -277,7 +277,7 @@ using EloBuddy;
         private static void OnEndScene(EventArgs args)
         {
             if (Config.Item("drawFullDmg").GetValue<bool>())
-                foreach (var enemy in EloBuddy.SDK.EntityManager.Heroes.Enemies.Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
+                foreach (var enemy in DeathWalker.AllEnemys.Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
                 {
                     hpi.unit = enemy;
                     hpi.drawDmg(Azir.getFullDmgOn(enemy), Color.Yellow);

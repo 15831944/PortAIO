@@ -26,7 +26,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             Q = new Spell(SpellSlot.Q, 1250f);
             Q1 = new Spell(SpellSlot.Q, 1250f);
             W = new Spell(SpellSlot.W, 800f);
-            E = new Spell(SpellSlot.E, 800f);
+            E = new Spell(SpellSlot.E, 830f);
             R = new Spell(SpellSlot.R, 3000f);
 
             Q.SetSkillshot(0.65f, 60f, 2200f, false, SkillshotType.SkillshotLine);
@@ -49,7 +49,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
             Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("autoW", "Auto W on hard CC", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("telE", "Auto W teleport", true).SetValue(true));
-            Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("forceW", "Force W before E", true).SetValue(false));
+            Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("forceW", "Force W before E", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("bushW", "Auto W bush after enemy enter", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("bushW2", "Auto W bush and turret if full ammo", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("W Config").AddItem(new MenuItem("Wspell", "W on special spell detection", true).SetValue(true));
@@ -77,8 +77,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            //Orbwalking.BeforeAttack += BeforeAttack;
-            //Orbwalking.AfterAttack += afterAttack;
+            //SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
+            //SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
 
@@ -160,7 +160,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 //debug("" + ObjectManager.Player.AttackRange);
             }
 
-            if (Program.LagFree(1) && E.IsReady() && Orbwalking.CanMove(40))
+            if (Program.LagFree(1) && E.IsReady() && SebbyLib.Orbwalking.CanMove(40))
                 LogicE();
             var orbT = Orbwalker.GetTarget() as AIHeroClient;
             if (orbT != null)
@@ -170,7 +170,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
             if (Program.LagFree(2) && W.IsReady() )
                 LogicW();
-            if (Program.LagFree(3) && Q.IsReady() && Orbwalking.CanMove(40) && Config.Item("autoQ2", true).GetValue<bool>())
+            if (Program.LagFree(3) && Q.IsReady() && SebbyLib.Orbwalking.CanMove(40) && Config.Item("autoQ2", true).GetValue<bool>())
                 LogicQ();
             if (Program.LagFree(4) && R.IsReady() && Config.Item("autoR", true).GetValue<bool>() && !ObjectManager.Player.UnderTurret(true) && Game.Time - QCastTime > 1)
                 LogicR();
@@ -219,9 +219,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
         private void LogicW()
         {
-            var orbT = Orbwalker.GetTarget() as AIHeroClient;
-            if (orbT != null && orbT.Health - OktwCommon.GetIncomingDamage(orbT) < Player.GetAutoAttackDamage(orbT) * 2)
-                return;
+            
             if (Player.Mana > RMANA + WMANA)
             {
                 if (Config.Item("autoW", true).GetValue<bool>())
@@ -238,7 +236,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                     if (!trapPos.IsZero)
                         W.Cast(trapPos);
                 }
-                if (!Orbwalking.CanMove(40))
+                if (!SebbyLib.Orbwalking.CanMove(40))
                     return;
                 if ((int)(Game.Time * 10) % 2 == 0 && Config.Item("bushW2", true).GetValue<bool>())
                 {
@@ -268,7 +266,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
             if (t.IsValidTarget(Q.Range))
             {
-                if (GetRealDistance(t) > bonusRange() + 250 && !Orbwalking.InAutoAttackRange(t) && OktwCommon.GetKsDamage(t, Q) > t.Health && Player.CountEnemiesInRange(400) == 0)
+                if (GetRealDistance(t) > bonusRange() + 250 && !SebbyLib.Orbwalking.InAutoAttackRange(t) && OktwCommon.GetKsDamage(t, Q) > t.Health && Player.CountEnemiesInRange(400) == 0)
                 {
                     Program.CastSpell(Q, t);
                     Program.debug("Q KS");
@@ -301,10 +299,6 @@ namespace OneKeyToWin_AIO_Sebby.Champions
         {
             if (Program.Combo && ObjectManager.Player.Spellbook.IsAutoAttacking)
                 return;
-            var orbT = Orbwalker.GetTarget() as AIHeroClient;
-            if (orbT != null && orbT.Health - OktwCommon.GetIncomingDamage(orbT) < Player.GetAutoAttackDamage(orbT)*2)
-                return;
-
             if (Config.Item("autoE", true).GetValue<bool>())
             {
                 var t = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);

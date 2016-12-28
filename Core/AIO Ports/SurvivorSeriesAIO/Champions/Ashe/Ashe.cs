@@ -14,7 +14,7 @@ using SebbyLib;
 using SurvivorSeriesAIO.Core;
 using SurvivorSeriesAIO.SurvivorMain;
 using SurvivorSeriesAIO.Utility;
-
+using Orbwalking = SebbyLib.Orbwalking;
 
 using EloBuddy; 
  using LeagueSharp.Common; 
@@ -72,15 +72,15 @@ using EloBuddy;
         {
             if (unit.IsMe)
             {
-                if (Orbwalking.InAutoAttackRange(target))
+                if (SebbyLib.Orbwalking.InAutoAttackRange(target))
                 {
                     switch (Orbwalker.ActiveMode)
                     {
-                        case Orbwalking.OrbwalkingMode.LaneClear:
+                        case SebbyLib.Orbwalking.OrbwalkingMode.LaneClear:
                             {
                                 if (Q.IsReady() && Config.Item("LaneClearUseQ").GetValue<bool>())
                                 {
-                                    var Minions = MinionManager.GetMinions(Orbwalking.GetRealAutoAttackRange(Player), MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health);
+                                    var Minions = MinionManager.GetMinions(SebbyLib.Orbwalking.GetRealAutoAttackRange(Player), MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health);
                                     {
 
                                     }

@@ -11,7 +11,7 @@ using EloBuddy;
         #region Fields and Objects
 
         public static MActivator Activator;
-        public static Orbwalking.Orbwalker Orbwalker;
+        public static MyOrbwalker.Orbwalker Orbwalker;
 
         #region Menu
 

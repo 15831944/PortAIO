@@ -47,8 +47,6 @@ namespace PortAIO
             }
 
             Console.WriteLine("[PortAIO] Core loaded.");
-
-            PortAIOMsg("PLEASE DO NOT ENABLE MORE THAN 2-3 UTILITIES OR YOU WILL CRASH.");
         }
 
         private static void Game_OnUpdate(EventArgs args)
@@ -88,12 +86,12 @@ namespace PortAIO
                     case 0: // AramDetFull
                         ARAMDetFull.Program.Main();
                         break;
-                    //case 1: // AutoJungle
-                    //    AutoJungle.Program.OnGameLoad();
-                    //    break;
-                    //case 2: // SharpAI
-                    //    SharpAI.Program.Main();
-                    //    break;
+                    case 1: // AutoJungle
+                        AutoJungle.Program.OnGameLoad();
+                        break;
+                    case 2: // SharpAI
+                        SharpAI.Program.Main();
+                        break;
                 }
             }
 
@@ -120,6 +118,9 @@ namespace PortAIO
                 {
                     case 0: // Humanizer#
                         HumanizerSharp.Program.Game_OnGameLoad();
+                        break;
+                    case 1: // SebbyBanWars
+                        Sebby_Ban_War.Program.Game_OnGameLoad();
                         break;
                 }
             }
@@ -154,16 +155,6 @@ namespace PortAIO
                 }
             }
 
-            if (Misc.menu.Item("enableCamera").GetValue<bool>())
-            {
-                switch (Misc.menu.Item("Camera").GetValue<StringList>().SelectedIndex)
-                {
-                    case 0: // HSCamera
-                        hsCamera.Program.Main();
-                        break;
-                }
-            }
-
             if (Misc.menu.Item("ShadowTracker").GetValue<bool>())
             {
                 ShadowTracker.Program.Game_OnGameLoad();
@@ -174,9 +165,19 @@ namespace PortAIO
                 UniversalPings.Program.Main();
             }
 
+            if (Misc.menu.Item("GodJungleTrackerReborn").GetValue<bool>())
+            {
+                GodJungleTracker.Program.Main();
+            }
+
             if (Misc.menu.Item("PerfectWardReborn").GetValue<bool>())
             {
                 PerfectWardReborn.Program.Main();
+            }
+
+            if (Misc.menu.Item("xAwareness").GetValue<bool>())
+            {
+                xAwareness.Program.Main();
             }
 
             if (Misc.menu.Item("RandomUlt").GetValue<bool>())
@@ -187,6 +188,11 @@ namespace PortAIO
             if (Misc.menu.Item("BaseUlt3").GetValue<bool>())
             {
                 BaseUlt3.Program.Main();
+            }
+
+            if (Misc.menu.Item("ControlSharp").GetValue<bool>())
+            {
+                ControlSharp.Program.Main();
             }
 
             if (Misc.menu.Item("UniversalRecallTracker").GetValue<bool>())
@@ -701,9 +707,6 @@ namespace PortAIO
                         case 1: // Camille#
                             Camille.Program.Main();
                             break;
-                        case 2: // Lord's Camille
-                            LordsCamille.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.Cassiopeia:
@@ -846,9 +849,6 @@ namespace PortAIO
                             break;
                         case 9: // sAIO
                             sAIO.Program.Main();
-                            break;
-                        case 10: // Flowers' Darius
-                            Flowers_Darius.Program.Main();
                             break;
                     }
                     break;
@@ -1137,9 +1137,6 @@ namespace PortAIO
                         case 28: // HandicAPEzreal
                             HandicapEzreal.Program.Main();
                             break;
-                        case 29: //yetAnotherEzreal
-                            yetAnotherEzreal.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.FiddleSticks:
@@ -1211,9 +1208,6 @@ namespace PortAIO
                         case 2: // Galio#
                             GalioSharp.Program.Main();
                             break;
-                        case 3: // AlqoholicGalio
-                            AlqoholicGalio.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.Gangplank:
@@ -1232,7 +1226,7 @@ namespace PortAIO
                             BePlank.Program.Main();
                             break;
                         case 4: // e.Motion Gangplank
-                            e.Motion_Gangplank.Program.Main();
+                            e.Motion_Gangplank.Program.Game_OnGameLoad();
                             break;
                     }
                     break;
@@ -1363,9 +1357,6 @@ namespace PortAIO
                             break;
                         case 6: // Ponycopter
                             Ponycopter.Ponycopter.Main();
-                            break;
-                        case 7: // Darwinn Hecarim
-                            Enurped_s.Program.Main();
                             break;
                     }
                     break;
@@ -1526,9 +1517,6 @@ namespace PortAIO
                             break;
                         case 4: // JayceSharpV2
                             JayceSharpV2.Program.Main();
-                            break;
-                        case 5: // Shulepin's Jayce
-                            Jayce.Load.Main();
                             break;
                     }
                     break;
@@ -1858,9 +1846,6 @@ namespace PortAIO
                         case 7: // Roach's Kayle
                             RoachKayle.Program.Main();
                             break;
-                        case 8: //KillaryClintonKalye
-                            kck.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.Kennen:
@@ -1921,15 +1906,7 @@ namespace PortAIO
                     }
                     break;
                 case Champion.Kled:
-                    switch (Misc.menu.Item(ObjectManager.Player.Hero.ToString()).GetValue<StringList>().SelectedIndex)
-                    {
-                        case 0: // hikiKled
-                            Hiki.Kled.Program.Main();
-                            break;
-                        case 1: // KledHighMajorCommodore
-                            KledHighMajorCommodore.Kled.Main();
-                            break;
-                    }
+                    Hiki.Kled.Program.Main();
                     break;
                 case Champion.KogMaw:
                     switch (Misc.menu.Item(ObjectManager.Player.Hero.ToString()).GetValue<StringList>().SelectedIndex)
@@ -1999,7 +1976,7 @@ namespace PortAIO
                     switch (Misc.menu.Item(ObjectManager.Player.Hero.ToString()).GetValue<StringList>().SelectedIndex)
                     {
                         case 0: // ElLeeSin
-                            ElLeeSin.Program.Main();
+                            ElLeeSin.Program.Game_OnGameLoad();
                             break;
                         case 1: // BrianSharp
                             BrianSharp.Program.Main();
@@ -2378,16 +2355,9 @@ namespace PortAIO
                             UnderratedAIO.Program.OnGameLoad();
                             break;
                         case 3: // Nasus The Crazy Dog
-                            Nasus.Program.Main();
                             break;
                         case 4: // Nasus the Lumberjack
                             NasusTheLumberJack.Program.Main();
-                            break;
-                        case 5: // sAIO
-                            sAIO.Program.Main();
-                            break;
-                        case 6: // Lord's Nasus
-                            HelpingLSharpNasus.Program.Main();
                             break;
                     }
                     break;
@@ -2437,9 +2407,6 @@ namespace PortAIO
                             break;
                         case 5: // Nidalee the Beastial Huntress
                             NidaleeTheBestialHuntress.Program.Main();
-                            break;
-                        case 6: // MightNidalee
-                            MightyNidalee.Mighty.Main();
                             break;
                     }
                     break;
@@ -2701,15 +2668,18 @@ namespace PortAIO
                             EloFactory_Riven.Program.Main();
                             break;
                         case 8: // Flower's Riven
-                            Flowers_Riven_Reborn.Program.Main();
+                            Flowers_Riven.Program.Main();
                             break;
                         case 9: // HeavenStrikeRiven
                             HeavenStrikeRiven.Program.Main();
                             break;
-                        case 10: // yol0Riven
+                        case 10: // RivenSharpV2
+                            RivenSharp.Program.Main();
+                            break;
+                        case 11: // yol0Riven
                             yol0Riven.Program.Main();
                             break;
-                        case 11: // RivenToTheChallenger  
+                        case 12: // RivenToTheChallenger  
                             RivenToTheChallenger.Program.Main();
                             break;
                     }
@@ -2726,16 +2696,13 @@ namespace PortAIO
                         case 2: // ElRumble
                             ElRumble.Program.Main();
                             break;
-                        case 3: // SurvivorSeries Rumble
-                            SSRumble.SSRumbleInit.Main();
-                            break;
                     }
                     break;
                 case Champion.Ryze:
                     switch (Misc.menu.Item(ObjectManager.Player.Hero.ToString()).GetValue<StringList>().SelectedIndex)
                     {
                         case 0: // Survivor Ryze
-                            SurvivorRyze.Program.Main();
+                            SurvivorRyze.Program.Game_OnGameLoad();
                             break;
                         case 1: // BrianSharp
                             BrianSharp.Program.Main();
@@ -3174,9 +3141,6 @@ namespace PortAIO
                         case 7: // Tc_SDKEx AIO
                             Tc_SDKexAIO.PlaySharp.Main();
                             break;
-                        case 8: // OKTW
-                            OneKeyToWin_AIO_Sebby.Program.GameOnOnGameLoad();
-                            break;
                     }
                     break;
                 case Champion.Thresh:
@@ -3239,7 +3203,7 @@ namespace PortAIO
                             OneKeyToWin_AIO_Sebby.Program.GameOnOnGameLoad();
                             break;
                         case 5: // PewPewTristana
-                            PewPewTristana.Program.Main();
+                            PewPewTristana.Program.OnLoad();
                             break;
                         case 6: // ProSeries
                             ProSeries.Program.GameOnOnGameLoad();
@@ -3449,9 +3413,6 @@ namespace PortAIO
                         case 6: // NoodUdyr
                             NoobUdyr.Program.Main();
                             break;
-                        case 7: // yetAnotherUdyr
-                            yetAnotherUdyr.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.Urgot:
@@ -3627,9 +3588,6 @@ namespace PortAIO
                         case 1: // OKTW
                             OneKeyToWin_AIO_Sebby.Program.GameOnOnGameLoad();
                             break;
-                        case 2: // Darwinn Vel'Koz
-                            Darwinn_s_velkoz.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.Vi:
@@ -3795,9 +3753,6 @@ namespace PortAIO
                         case 5: // Xerath - Magnus Ascendant
                             Xerath___The_Magus_Ascendant.Program.Main();
                             break;
-                        case 6: // Lord's Xerath
-                            Lords_Xerath.Program.Main();
-                            break;
                     }
                     break;
                 case Champion.XinZhao:
@@ -3844,24 +3799,27 @@ namespace PortAIO
                         case 6: //YasuoMemeBender
                             YasuoTheLastMemebender.Program.Game_OnGameLoad();
                             break;
-                        case 7: // Valvrave#
+                        case 7: // Media's Yasuo
+                            YasuoMedia.Program.Main();
+                            break;
+                        case 8: // Valvrave#
                             Valvrave_Sharp.Program.Main();
                             break;
-                        case 8: // Badaos Yasuo
+                        case 9: // Badaos Yasuo
                             BadaoYasuo.Program.Main();
                             break;
-                        case 9: // hYasuo
+                        case 10: // hYasuo
                             hYasuo.Program.Main();
                             break;
-                        case 10: // ReformedAIO
+                        case 11: // ReformedAIO
                             ReformedAIO.Program.Main();
                             break;
-                        case 11: // Flowers' Yasuo
+                        case 12: // Flowers' Yasuo
                             Flowers_Yasuo.Program.Main();
                             break;
-                        case 12: // GosuMechanicsYasuo Rebirth
+                        case 13: // GosuMechanicsYasuo Rebirth
                             FloraGosYasuo.Program.Main();
-                            break;
+                            break; 
                     }
                     break;
                 case Champion.Yorick:

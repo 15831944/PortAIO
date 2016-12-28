@@ -379,8 +379,6 @@ namespace ARAMDetFull
         public static void setChamp()
         {
             Chat.Print("Champion hero: " + player.ChampionName);
-            #region Init Champion
-            /*
             switch (player.ChampionName)
             {
                 case "Cassiopeia":
@@ -680,8 +678,7 @@ namespace ARAMDetFull
                 case "Illaoi":
                     champ = new Illaoi();
                     break;
-            }*/
-            #endregion
+            }
         }
 
         public static void buyItems()
@@ -764,7 +761,8 @@ namespace ARAMDetFull
                 if (sender.IsValid<MissileClient>() && sender.IsValid && (MissileClient)sender != null)
                 {
                     var missile = (MissileClient)sender;
-                    if (missile.SpellCaster.IsValid<Obj_AI_Turret>() && missile.SpellCaster.IsEnemy && missile.Target != null && missile.Target.IsValid<AIHeroClient>() && missile.Target.IsAlly)
+                    if (missile.SpellCaster.IsValid<Obj_AI_Turret>() && missile.SpellCaster.IsEnemy && missile.Target != null &&
+                        missile.Target.IsValid<AIHeroClient>() && missile.Target.IsAlly)
                     {
                         var turret = (Obj_AI_Turret)missile.SpellCaster;
                         if (missile.Target.IsMe)

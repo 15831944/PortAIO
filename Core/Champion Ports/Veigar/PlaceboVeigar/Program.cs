@@ -9,6 +9,7 @@ using LeagueSharp.Common;
 using VeigShineCommon;
 using VeigSPrediction;
 //typedefs
+using Orbwalking = VeigShineCommon.Orbwalking;
 
 using EloBuddy; 
  using LeagueSharp.Common; 

@@ -110,8 +110,6 @@ namespace NechritoRiven
 
         public static bool QReset => config.Item("qReset").GetValue<bool>();
 
-        public static bool R2Draw => config.Item("R2Draw").GetValue<bool>();
-
         public static StringList SkinList => config.Item("SkinList").GetValue<StringList>();
 
         public static bool UseSkin => config.Item("UseSkin").GetValue<bool>();
@@ -119,8 +117,6 @@ namespace NechritoRiven
         public static bool WallFlee => config.Item("WallFlee").GetValue<bool>();
 
         public static bool Q3Wall => config.Item("Q3Wall").GetValue<bool>();
-
-        public static bool UltHarass => config.Item("UltHarass").GetValue<bool>();
 
         public static int WallWidth => config.Item("WallWidth").GetValue<Slider>().Value;
 
@@ -137,9 +133,9 @@ namespace NechritoRiven
             config.AddSubMenu(orbwalker);
 
             var animation = new Menu("Animations", "Animation");
-            animation.AddItem(new MenuItem("QD", "Q1 Ping").SetValue(new Slider(210, 210, 340)));
-            animation.AddItem(new MenuItem("Q2D", "Q2 Ping").SetValue(new Slider(210, 210, 340)));
-            animation.AddItem(new MenuItem("Q3D", "Q3 Ping").SetValue(new Slider(340, 340, 380)));
+            animation.AddItem(new MenuItem("QD", "Q1 Ping").SetValue(new Slider(205, 205, 340)));
+            animation.AddItem(new MenuItem("Q2D", "Q2 Ping").SetValue(new Slider(205, 205, 340)));
+            animation.AddItem(new MenuItem("Q3D", "Q3 Ping").SetValue(new Slider(330, 330, 380)));
             animation.AddItem(new MenuItem("CancelPing", "Include Ping").SetValue(true));
             animation.AddItem(new MenuItem("EmoteList", "Emotes").SetValue(new StringList(new[] { "Laugh", "Taunt", "Joke", "Dance", "None" }, 3)));
             config.AddSubMenu(animation);
@@ -149,7 +145,7 @@ namespace NechritoRiven
             combo.AddItem(new MenuItem("FlashOften", "Flash Burst Frequently").SetValue(false).SetTooltip("Will flash if killable, always."));
             combo.AddItem(new MenuItem("OverKillCheck", "R2 Max Damage").SetValue(true));
             combo.AddItem(new MenuItem("Doublecast", "Doublecast").SetValue(true)).SetTooltip("Fast Combo, less dmg");
-            combo.AddItem(new MenuItem("UltHarass", "Use Ult In Harass (Killable only)").SetValue(false));
+            combo.AddItem(new MenuItem("SafeR1", "Don't waste R1").SetValue(true));
             combo.AddItem(new MenuItem("UseR1", "Use R").SetValue(new KeyBind('G', KeyBindType.Toggle)));
             combo.AddItem(new MenuItem("AlwaysF", "Use Flash").SetValue(new KeyBind('L', KeyBindType.Toggle)));
             config.AddSubMenu(combo);
@@ -182,11 +178,10 @@ namespace NechritoRiven
             config.AddSubMenu(misc);
 
             var draw = new Menu("Draw", "Draw");
+            draw.AddItem(new MenuItem("FleeSpot", "Draw Flee Spots").SetValue(true));
+            draw.AddItem(new MenuItem("Dind", "Damage Indicator").SetValue(true));
             draw.AddItem(new MenuItem("DrawForceFlash", "Flash Status").SetValue(true));
             draw.AddItem(new MenuItem("DrawAlwaysR", "R Status").SetValue(true));
-            draw.AddItem(new MenuItem("R2Draw", "R2 Dmg").SetValue(false));
-            draw.AddItem(new MenuItem("Dind", "Damage Indicator").SetValue(true));
-            draw.AddItem(new MenuItem("FleeSpot", "Draw Flee Spots").SetValue(true));
             draw.AddItem(new MenuItem("DrawCB", "Combo Engage").SetValue(true));
             draw.AddItem(new MenuItem("DrawBT", "BurstMode Engage").SetValue(false));
             draw.AddItem(new MenuItem("DrawFH", "FastHarassMode Engage").SetValue(false));
@@ -222,7 +217,7 @@ namespace NechritoRiven
 
             config.AddSubMenu(skin);
 
-            config.AddItem(new MenuItem("version", "Version: 6.24.3").SetFontStyle(FontStyle.Bold, Color.Cyan));
+            config.AddItem(new MenuItem("version", "Version: 6.24.1").SetFontStyle(FontStyle.Bold, Color.Cyan));
 
             config.AddItem(new MenuItem("paypal", "Paypal: nechrito@live.se").SetFontStyle(FontStyle.Regular, Color.Cyan));
 

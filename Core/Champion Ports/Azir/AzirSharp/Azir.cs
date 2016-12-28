@@ -5,6 +5,7 @@ using DetuksSharp;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using DeathWalker = DetuksSharp.DeathWalker;
 
 using EloBuddy; 
  using LeagueSharp.Common; 
@@ -70,7 +71,7 @@ using EloBuddy;
                 castWTarget(targ);
             }
             // if (getEnemiesInSolRange().Count == 0)
-            if (!newSloiderSoon() && (!enemyInAzirRange(targ) || (targ.Health <= Q.GetDamage(targ) + ObjectManager.Player.GetAutoAttackDamage(targ))) && AzirSharp.Config.Item("useQ").GetValue<bool>())
+            if (!newSloiderSoon() && (!enemyInAzirRange(targ) || (targ.Health <= Q.GetDamage(targ) + DeathWalker.getRealAADmg(targ))) && AzirSharp.Config.Item("useQ").GetValue<bool>())
                 castQTarget(targ);
 
             if (AzirSharp.Config.Item("useE").GetValue<bool>() )
@@ -90,10 +91,10 @@ using EloBuddy;
             {
                  foreach (var ene in enes)
                  {
-                     if (Orbwalking.CanAttack() && solisAreStill())
+                     if (DeathWalker.canAttack() && solisAreStill())
                      {
                          Console.WriteLine("Attack");
-                         //DeathWalker.doAttack(ene);
+                         DeathWalker.doAttack(ene);
                      }
                  }
             }
@@ -141,7 +142,7 @@ using EloBuddy;
                 return;
             var pos = (posIn.Distance(Player.Position, true) < W.RangeSqr) ? posIn : Player.Position.Extend(posIn, W.Range);
 
-            Obj_AI_Base tower = EloBuddy.SDK.EntityManager.Turrets.Enemies.Where(tur => tur != null && tur.IsValid && tur.IsEnemy && tur.Health > 0 && tur.Distance(Player, true) < 700 * 700).OrderBy(tur => pos.Distance(tur.Position)).FirstOrDefault();
+            Obj_AI_Base tower = DeathWalker.EnemyTowers.Where(tur => tur != null && tur.IsValid && tur.IsEnemy && tur.Health > 0 && tur.Distance(Player, true) < 700 * 700).OrderBy(tur => pos.Distance(tur.Position)).FirstOrDefault();
             
             if (tower != null )
             {
@@ -209,7 +210,7 @@ using EloBuddy;
                 {
                     var pol = DeathMath.getPolygonOn(Player.Position.Extend(tower.Position, -255).To2D(), tower.Position.To2D(), 300 + R.Level * 100, 270);
                     if (
-                        EloBuddy.SDK.EntityManager.Heroes.Enemies.Any(
+                        DeathWalker.AllEnemys.Any(
                             ene => ene.IsValid && !ene.IsDead && pol.pointInside(ene.Position.To2D())))
                     {
                         R.Cast(tower.Position);
@@ -340,7 +341,7 @@ using EloBuddy;
                     {
                         var pol = DeathMath.getPolygonOn(Player.Position.Extend(tower.Position, -155).To2D(), tower.Position.To2D(), 300+R.Level*100,270);
                         if (
-                           EloBuddy.SDK.EntityManager.Heroes.Enemies.Any(
+                            DeathWalker.AllEnemys.Any(
                                 ene => ene.IsValid && !ene.IsDead && pol.pointInside(ene.Position.To2D())))
                         {
                             R.Cast(tower.Position);
@@ -376,7 +377,7 @@ using EloBuddy;
                     var pol = DeathMath.getPolygonOn(Player.Position.Extend(tower.Position, -155).To2D(),
                         tower.Position.To2D(), R.Width, 240);
                     if (
-                        EloBuddy.SDK.EntityManager.Heroes.Enemies.Any(
+                        DeathWalker.AllEnemys.Any(
                             ene => ene.IsValid && !ene.IsDead && pol.pointInside(ene.Position.To2D())))
                     {
                         R.Cast(tower.Position);
@@ -514,7 +515,7 @@ using EloBuddy;
         public static List<AIHeroClient> getEnemiesInSolRange()
         {
             List<Obj_AI_Minion> solis = getUsableSoliders();
-            List<AIHeroClient> enemies = EloBuddy.SDK.EntityManager.Heroes.Enemies.Where(ene => ene.IsEnemy && ene.IsVisible && !ene.IsDead).ToList();
+            List<AIHeroClient> enemies = DeathWalker.AllEnemys.Where(ene => ene.IsEnemy && ene.IsVisible && !ene.IsDead).ToList();
             List<AIHeroClient> inRange = new List<AIHeroClient>();
 
             if (solis.Count == 0)

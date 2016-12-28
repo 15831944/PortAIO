@@ -104,7 +104,7 @@ using LeagueSharp.Common;
         /// <value>
         ///     The spell name font.
         /// </value>
-        private Font SpellNameFont { get; set; }
+        private Font SpellNameFont { get; } = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Arial", 15));
 
         /// <summary>
         ///     Gets or sets the spells.
@@ -165,7 +165,7 @@ using LeagueSharp.Common;
 
             foreach (var enemy in HeroManager.Enemies)
             {
-                menu.AddItem(new MenuItem($"Track.{enemy.BaseSkinName}", "Track " + enemy.ChampionName))
+                menu.AddItem(new MenuItem($"Track.{enemy.CharData.BaseSkinName}", "Track " + enemy.ChampionName))
                     .SetValue(true);
             }
 
@@ -173,19 +173,19 @@ using LeagueSharp.Common;
             {
                 args.Process = false;
 
-                if (args.GetOldValue<bool>())
+                if (this.Cards.Any(x => x.Name.Equals("Test")) || args.GetOldValue<bool>())
                 {
                     return;
                 }
-                
+
                 this.Cards.Add(
                     new Card
                     {
-                        EndTime = Game.Time + 11,
                         EndMessage = "Ready",
-                        FriendlyName = $"Zac R",
-                        StartTime = Game.Time,
-                        Name = "ZacR"
+                        EndTime = Game.Time + 10,
+                        FriendlyName = "Test",
+                        Name = "Test",
+                        StartTime = Game.Time
                     });
             };
 
@@ -203,14 +203,12 @@ using LeagueSharp.Common;
                 return;
             }
 
-            SpellNameFont = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Arial", 17));
-
             Game.OnUpdate += this.GameOnUpdate;
             Drawing.OnDraw += this.Drawing_OnDraw;
 
             JungleTracker.CampDied += this.JungleTrackerCampDied;
             Teleport.OnTeleport += this.OnTeleport;
-            Obj_AI_Base.OnBuffLose += this.OnBuffLose;
+            //Obj_AI_Base.OnBuffLose += this.OnBuffLose;
 
             Drawing.OnPreReset += args =>
             {
@@ -226,8 +224,8 @@ using LeagueSharp.Common;
                 this.Sprite.OnResetDevice();
             };
 
-            var names = Assembly.GetExecutingAssembly().GetManifestResourceNames().Skip(1).ToList();
-            
+            var names = this.GetType().GetTypeInfo().Assembly.GetManifestResourceNames();
+
             var neededSpells =
                  Data.Get<SpellDatabase>().Spells.Where(
                         x =>
@@ -238,11 +236,10 @@ using LeagueSharp.Common;
             {
                 try
                 {
-                    var spellName = name.Split('.')[4];
-                    if (spellName != "Dragon" && spellName != "Baron" && spellName != "Teleport" && spellName != "Rebirthready" && spellName != "Zacrebirthready")
+                    var spellName = name.Split('.')[3];
+                    if (spellName != "Dragon" && spellName != "Baron" && spellName != "Teleport"  && spellName != "Rebirthready" && spellName != "Zacrebirthready")
                     {
                         this.Spells.Add(Data.Get<SpellDatabase>().Spells.First(x => x.SpellName.Equals(spellName)));
-
                         if (!neededSpells.Contains(spellName))
                         {
                             continue;
@@ -253,11 +250,11 @@ using LeagueSharp.Common;
                         spellName,
                         Texture.FromStream(
                             Drawing.Direct3DDevice,
-                            Assembly.GetExecutingAssembly().GetManifestResourceStream(name)));
+                            this.GetType().GetTypeInfo().Assembly.GetManifestResourceStream(name)));
                 }
                 catch (Exception)
                 {
-                    throw;
+                    //Console.WriteLine($"Failed to find load image for {name}. Please notify jQuery/ChewyMoon!");
                 }
             }
 
@@ -431,14 +428,17 @@ using LeagueSharp.Common;
                     continue;
                 }
 
-
-                foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 && x.CooldownExpires - Game.Time <= Countdown))
+                foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 
+                && x.CooldownExpires - Game.Time <= Countdown))
                 {
-                    if (spell.CooldownExpires - Game.Time <= -3 && this.StartX + (int)((-(spell.CooldownExpires - Game.Time) - 3) * MoveRightSpeed) >= Drawing.Width + i * MoveRightSpeed)
+                    if (spell.CooldownExpires - Game.Time <= -3
+                        && this.StartX + (int)((-(spell.CooldownExpires - Game.Time) - 3) * MoveRightSpeed)
+                        >= Drawing.Width + i * MoveRightSpeed)
                     {
                         continue;
                     }
 
+                    // draw spell
                     var remainingTime = spell.CooldownExpires - Game.Time;
                     var spellReady = remainingTime <= 0;
 
@@ -465,11 +465,16 @@ using LeagueSharp.Common;
 
                     // Draw spell name
                     var spellNameStart = boxStart + this.Padding;
-                    this.SpellNameFont.DrawText(null, $"{enemy.ChampionName} {spell.Slot}", (int)StartX + 24, (int)this.StartY - 45, new ColorBGRA(255, 255, 255, 255));
+                    this.SpellNameFont.DrawText(
+                        null,
+                        $"{enemy.ChampionName} {spell.Slot}",
+                        (int)spellNameStart.X,
+                        (int)spellNameStart.Y,
+                        new ColorBGRA(255, 255, 255, 255));
 
                     // draw icon
                     var textSize = this.SpellNameFont.MeasureText(null, $"{enemy.ChampionName} {spell.Slot}");
-                    var iconStart = spellNameStart + new Vector2(0, textSize.Height - 50);
+                    var iconStart = spellNameStart + new Vector2(0, textSize.Height + 5);
 
                     Texture texture;
                     if (this.Icons.TryGetValue(spell.SData.Name, out texture))
@@ -480,12 +485,17 @@ using LeagueSharp.Common;
                     }
                     else
                     {
-                        DrawBox(iconStart, 52, 52, Color.Black, 0, new Color());
+                        DrawBox(iconStart, 52, 52, Color.White, 0, new Color());
                     }
 
                     // draw countdown, add [icon size + padding]
-                    var countdownStart = iconStart + new Vector2(51 + 22, 5);
-                    this.CountdownFont.DrawText(null, remainingTimePretty, (int)countdownStart.X, (int)countdownStart.Y - 5, new ColorBGRA(255, 255, 255, 255));
+                    var countdownStart = iconStart + new Vector2(51 + 22, -7);
+                    this.CountdownFont.DrawText(
+                        null,
+                        remainingTimePretty,
+                        (int)countdownStart.X,
+                        (int)countdownStart.Y,
+                        new ColorBGRA(255, 255, 255, 255));
 
                     // Draw progress bar :(
                     var countdownSize = this.CountdownFont.MeasureText(null, remainingTimePretty);
@@ -501,8 +511,8 @@ using LeagueSharp.Common;
                     // MAGICERINO
                     DrawBox(progressBarStart, progressBarFullSize, 15, Color.Black, 1, Color.LawnGreen);
                     DrawBox(
-                        progressBarStart + new Vector2(3, 8),
-                        (int)(progressBarActualSize),
+                        progressBarStart + new Vector2(3, 3),
+                        (int)(progressBarActualSize - 6),
                         15 - 5,
                         Color.LawnGreen,
                         0,
@@ -541,11 +551,16 @@ using LeagueSharp.Common;
 
                 // Draw spell name
                 var spellNameStart = boxStart + this.Padding;
-                this.SpellNameFont.DrawText(null, card.FriendlyName, (int)StartX + 24, (int)this.StartY - 45, new ColorBGRA(255, 255, 255, 255));
+                this.SpellNameFont.DrawText(
+                    null,
+                    card.FriendlyName,
+                    (int)spellNameStart.X,
+                    (int)spellNameStart.Y,
+                    new ColorBGRA(255, 255, 255, 255));
 
                 // draw icon
                 var textSize = this.SpellNameFont.MeasureText(null, card.FriendlyName);
-                var iconStart = spellNameStart + new Vector2(0, textSize.Height - 50);
+                var iconStart = spellNameStart + new Vector2(0, textSize.Height + 5);
 
                 Texture texture;
                 if (this.Icons.TryGetValue(card.Name, out texture))
@@ -556,16 +571,21 @@ using LeagueSharp.Common;
                 }
                 else
                 {
-                    DrawBox(iconStart, 52, 52, Color.Black, 0, new Color());
+                    DrawBox(iconStart, 52, 52, Color.White, 0, new Color());
                 }
 
                 // draw countdown, add [icon size + padding]
-                var countdownStart = iconStart + new Vector2(51 + 22, 5);
-                this.CountdownFont.DrawText(null, remainingTimePretty, (int)countdownStart.X, (int)countdownStart.Y - 5, new ColorBGRA(255, 255, 255, 255));
+                var countdownStart = iconStart + new Vector2(51 + 22, -7);
+                this.CountdownFont.DrawText(
+                    null,
+                    remainingTimePretty,
+                    (int)countdownStart.X,
+                    (int)countdownStart.Y,
+                    new ColorBGRA(255, 255, 255, 255));
 
                 // Draw progress bar :(
                 var countdownSize = this.CountdownFont.MeasureText(null, remainingTimePretty);
-                var progressBarStart = countdownStart + new Vector2(0, countdownSize.Height);
+                var progressBarStart = countdownStart + new Vector2(0, countdownSize.Height + 9);
                 var progressBarFullSize = 125;
                 var cooldown = card.EndTime - card.StartTime;
                 var progressBarActualSize = (cooldown - remainingTime) / cooldown * progressBarFullSize;
@@ -578,8 +598,8 @@ using LeagueSharp.Common;
                 // MAGICERINO
                 DrawBox(progressBarStart, progressBarFullSize, 15, Color.Black, 1, Color.LawnGreen);
                 DrawBox(
-                    progressBarStart + new Vector2(3, 8),
-                    (int)(progressBarActualSize),
+                    progressBarStart + new Vector2(3, 3),
+                    (int)(progressBarActualSize - 6),
                     15 - 5,
                     Color.LawnGreen,
                     0,

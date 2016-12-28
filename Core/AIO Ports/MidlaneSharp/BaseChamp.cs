@@ -15,9 +15,10 @@ using SharpDX.Direct3D9;
 //typedefs
 using Prediction = SPrediction.Prediction;
 using Geometry = SPrediction.Geometry;
-using EloBuddy;
-using LeagueSharp.Common;
-namespace MidlaneSharp
+using Orbwalking = MidlaneSharp.Orbwalking;
+using EloBuddy; 
+ using LeagueSharp.Common; 
+ namespace MidlaneSharp
 {
     public abstract class BaseChamp
     {
@@ -45,27 +46,98 @@ namespace MidlaneSharp
                 });
 
             Config = new Menu(String.Format("Midlane# {0} !", szChampName), szChampName, true);
-
+            
             TargetSelector.AddToMenu(Config.SubMenu("Target Selector"));
             orb = Config.SubMenu("Orbwalking");
 
             Orbwalker = new Orbwalking.Orbwalker(orb.SubMenu("Common Orbwalker"));
-            orb.AddItem(new MenuItem("orbmode", "Orbwalk Mode").SetValue<StringList>(new StringList(new string[] { "Common Orbwalker" }, 0)))
+            LXOrbwalker.AddToMenu(orb.SubMenu("LXOrbwalker"));
+            orb.AddItem(new MenuItem("orbmode", "Orbwalk Mode").SetValue<StringList>(new StringList(new string[] { "Common Orbwalker", "LXOrbwalker" }, 0)))
                         .ValueChanged += (s, ar) =>
                         {
                             dVoidDelegate fnCombo, fnHarass, fnLastHit, fnLaneClear;
                             fnCombo = fnHarass = fnLastHit = fnLaneClear = null;
 
+                            if (ar.GetNewValue<StringList>().SelectedIndex == 1) //lxorbwalker selected
+                            {
+                                Orbwalker.Disable();
+                                if (OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Combo] != null)
+                                {
+                                    fnCombo = OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Combo];
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Combo] -= OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Combo];
+                                }
 
-                            if (fnCombo != null)
-                                OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Combo] += fnCombo;
-                            if (fnHarass != null)
-                                OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Mixed] += fnHarass;
-                            if (fnLaneClear != null)
-                                OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LaneClear] += fnLaneClear;
-                            if (fnLastHit != null)
-                                OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LastHit] += fnLastHit;
+                                if (OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Mixed] != null)
+                                {
+                                    fnHarass = OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Mixed];
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Mixed] -= OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Mixed];
+                                }
+
+                                if (OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LastHit] != null)
+                                {
+                                    fnLastHit = OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LastHit];
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LastHit] -= OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LastHit];
+                                }
+
+                                if (OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LaneClear] != null)
+                                {
+                                    fnLaneClear = OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LaneClear];
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LaneClear] -= OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LaneClear];
+                                }
+                                
+                                if(fnCombo != null)
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.Combo] += fnCombo;
+                                if(fnHarass != null)
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.Harass] += fnHarass;
+                                if(fnLaneClear != null)
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.LaneClear] += fnLaneClear;
+                                if(fnLastHit != null)
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.Lasthit] += fnLastHit;
+                                LXOrbwalker.Enable();
+                            }
+                            else //common orbwalker selected
+                            {
+                                LXOrbwalker.Disable();
+                                if (OrbwalkingFunctions[(int)LXOrbwalker.Mode.Combo] != null)
+                                {
+                                    fnCombo = OrbwalkingFunctions[(int)LXOrbwalker.Mode.Combo];
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.Combo] -= OrbwalkingFunctions[(int)LXOrbwalker.Mode.Combo];
+                                }
+
+                                if (OrbwalkingFunctions[(int)LXOrbwalker.Mode.Harass] != null)
+                                {
+                                    fnHarass = OrbwalkingFunctions[(int)LXOrbwalker.Mode.Harass];
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.Harass] -= OrbwalkingFunctions[(int)LXOrbwalker.Mode.Harass];
+                                }
+
+                                if (OrbwalkingFunctions[(int)LXOrbwalker.Mode.Lasthit] != null)
+                                {
+                                    fnLastHit = OrbwalkingFunctions[(int)LXOrbwalker.Mode.Lasthit];
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.Lasthit] -= OrbwalkingFunctions[(int)LXOrbwalker.Mode.Lasthit];
+                                }
+
+                                if (OrbwalkingFunctions[(int)LXOrbwalker.Mode.LaneClear] != null)
+                                {
+                                    fnLaneClear = OrbwalkingFunctions[(int)LXOrbwalker.Mode.LaneClear];
+                                    OrbwalkingFunctions[(int)LXOrbwalker.Mode.LaneClear] -= OrbwalkingFunctions[(int)LXOrbwalker.Mode.LaneClear];
+                                }
+
+                                if (fnCombo != null)
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Combo] += fnCombo;
+                                if (fnHarass != null)
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.Mixed] += fnHarass;
+                                if (fnLaneClear != null)
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LaneClear] += fnLaneClear;
+                                if (fnLastHit != null)
+                                    OrbwalkingFunctions[(int)Orbwalking.OrbwalkingMode.LastHit] += fnLastHit;
+                                Orbwalker.Enable();
+                            }
                         };
+
+            if (LXOrbwalkerEnabled)
+                LXOrbwalker.Enable();
+            else
+                Orbwalker.Enable();
 
             activator = new Menu("Activator", "activator");
             new Smite(TargetSelector.DamageType.Magical, activator);
@@ -77,7 +149,7 @@ namespace MidlaneSharp
             Config.AddSubMenu(drawing);
             SpellDatabase.InitalizeSpellDatabase();
         }
-
+        
         public virtual void CreateConfigMenu()
         {
             Config.AddToMainMenu();
@@ -228,17 +300,17 @@ namespace MidlaneSharp
             if (Items.CanUseItem(3153) && ObjectManager.Player.Distance(target, false) < 550)
                 dmg += ObjectManager.Player.GetItemDamage(target, Damage.DamageItems.Botrk); //botrk
 
-            if (Items.HasItem(3057))
+            if(Items.HasItem(3057))
                 dmg += ObjectManager.Player.CalcDamage(target, Damage.DamageType.Magical, ObjectManager.Player.BaseAttackDamage); //sheen
 
             if (Items.HasItem(3100))
                 dmg += ObjectManager.Player.CalcDamage(target, Damage.DamageType.Magical, (0.75 * ObjectManager.Player.BaseAttackDamage) + (0.50 * ObjectManager.Player.FlatMagicDamageMod)); //lich bane
-
-            if (Items.HasItem(3285))
+            
+            if(Items.HasItem(3285))
                 dmg += ObjectManager.Player.CalcDamage(target, Damage.DamageType.Magical, 100 + (0.1 * ObjectManager.Player.FlatMagicDamageMod)); //luden
 
             return dmg;
-
+            
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -265,7 +337,7 @@ namespace MidlaneSharp
         {
             get
             {
-                return (int)Orbwalking.OrbwalkingMode.Combo;
+                return LXOrbwalkerEnabled ? (int)LXOrbwalker.Mode.Combo : (int)Orbwalking.OrbwalkingMode.Combo;
             }
         }
 
@@ -273,7 +345,7 @@ namespace MidlaneSharp
         {
             get
             {
-                return (int)Orbwalking.OrbwalkingMode.Mixed;
+                return LXOrbwalkerEnabled ? (int)LXOrbwalker.Mode.Harass : (int)Orbwalking.OrbwalkingMode.Mixed;
             }
         }
 
@@ -281,7 +353,7 @@ namespace MidlaneSharp
         {
             get
             {
-                return (int)Orbwalking.OrbwalkingMode.LaneClear;
+                return LXOrbwalkerEnabled ? (int)LXOrbwalker.Mode.LaneClear : (int)Orbwalking.OrbwalkingMode.LaneClear;
             }
         }
 
@@ -289,7 +361,7 @@ namespace MidlaneSharp
         {
             get
             {
-                return (int)Orbwalking.OrbwalkingMode.LastHit;
+                return LXOrbwalkerEnabled ? (int)LXOrbwalker.Mode.Lasthit : (int)Orbwalking.OrbwalkingMode.LastHit;
             }
         }
 
@@ -297,7 +369,7 @@ namespace MidlaneSharp
         {
             get
             {
-                return (int)Orbwalking.OrbwalkingMode.None;
+                return LXOrbwalkerEnabled ? (int)LXOrbwalker.Mode.None : (int)Orbwalking.OrbwalkingMode.None;
             }
         }
 
@@ -305,7 +377,7 @@ namespace MidlaneSharp
         {
             get
             {
-                return (int)Orbwalker.ActiveMode;
+                return LXOrbwalkerEnabled ? (int)LXOrbwalker.CurrentMode : (int)Orbwalker.ActiveMode;
             }
         }
     }

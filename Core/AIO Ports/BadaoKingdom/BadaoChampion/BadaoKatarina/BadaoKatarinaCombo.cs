@@ -7,11 +7,10 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
-using ItemData = LeagueSharp.Common.Data.ItemData;
 
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace BadaoKingdom.BadaoChampion.BadaoKatarina
+ namespace BadaoKingdom.BadaoChampion.BadaoKatarina
 {
     using static BadaoMainVariables;
     using static BadaoKatarinaVariables;
@@ -70,15 +69,7 @@ namespace BadaoKingdom.BadaoChampion.BadaoKatarina
             // normal
             if (Player.IsChannelingImportantSpell())
                 return;
-            //hextechgunblade
-            if (ItemData.Hextech_Gunblade.GetItem().IsReady())
-            {
-                var target = TargetSelector.GetTarget(700, TargetSelector.DamageType.Magical);
-                if (target.IsValidTarget())
-                {
-                    ItemData.Hextech_Gunblade.GetItem().Cast(target);
-                }
-            }
+
             // W
             if (W.IsReady() && !E.IsReady())
             {

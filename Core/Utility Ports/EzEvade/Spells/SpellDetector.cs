@@ -61,7 +61,6 @@ using LeagueSharp.Common;
             MissileClient.OnDelete += SpellMissile_OnDelete;
 
             AIHeroClient.OnProcessSpellCast += Game_ProcessSpell;
-            AIHeroClient.OnSpellCast += Game_ProcessSpell;
 
             Game.OnUpdate += Game_OnGameUpdate;
 

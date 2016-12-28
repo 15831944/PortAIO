@@ -9,9 +9,9 @@ using SharpDX;
 using System.Drawing;
 using Color = System.Drawing.Color;
 
-using EloBuddy;
-using LeagueSharp.Common;
-namespace Diana_Masterrace
+using EloBuddy; 
+ using LeagueSharp.Common; 
+ namespace Diana_Masterrace
 {
     class Program
     {
@@ -29,7 +29,7 @@ namespace Diana_Masterrace
         public static Spell W;
         public static Spell E;
         public static Spell R;
-
+        
 
         public static void Main()
         {
@@ -108,15 +108,21 @@ namespace Diana_Masterrace
             Config.SubMenu("Draw Settings").AddItem(new MenuItem("hitChanceDraw", "Draw HitChance on Enemy").SetValue(true));
 
             Config.AddItem(new MenuItem("masterracec0mb0", "                      Important Settings"));
-            Config.AddItem(new MenuItem("selectOrbwalky", "Orbwalker Type").SetValue(new StringList(new[] { "Common Orbwalker", })));
+            Config.AddItem(new MenuItem("selectOrbwalky", "Orbwalker Type").SetValue(new StringList(new[] { "Common Orbwalker", "LXOrbwalker" })));
             switch (Config.Item("selectOrbwalky").GetValue<StringList>().SelectedIndex)
             {
+
                 case 0:
                     Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker Settings"));
                     LXOrb = false;
                     break;
+                case 1:
+                    Orbwalker = null;
+                    LXOrbwalker.AddToMenu(Config.SubMenu("Orbwalker Settings"));
+                    LXOrb = true;
+                    break;
             }
-            Config.AddItem(new MenuItem("cType", "Combo Method").SetValue(new StringList(new[] { "Advantage", "Misaya" })));
+            Config.AddItem(new MenuItem("cType", "Combo Method").SetValue(new StringList(new[] { "Advantage","Misaya" })));
             Config.AddItem(new MenuItem("hType", "Harass Method").SetValue(new StringList(new[] { "Basic" })));
             Config.AddItem(new MenuItem("ignite", "Use Smart Ignite").SetValue(true));
 
@@ -130,12 +136,12 @@ namespace Diana_Masterrace
             DamageIndicator.FillColor = drawFill.GetValue<Circle>().Color;
 
             drawDamageMenu.ValueChanged +=
-            delegate (object sender, OnValueChangeEventArgs eventArgs)
+            delegate(object sender, OnValueChangeEventArgs eventArgs)
             {
                 DamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
             };
             drawFill.ValueChanged +=
-            delegate (object sender, OnValueChangeEventArgs eventArgs)
+            delegate(object sender, OnValueChangeEventArgs eventArgs)
             {
                 DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
                 DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
@@ -230,29 +236,58 @@ namespace Diana_Masterrace
         }
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (LXOrb)
             {
-                Combo();
+                if (LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo)
+                {
+                    Combo();
+                }
+                if (LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Harass)
+                {
+                    Harass();
+                }
+                if (LXOrbwalker.CurrentMode == LXOrbwalker.Mode.LaneClear)
+                {
+                    Jungle();
+                    LaneClear();
+                }
+                if (Config.Item("channelingBroker").GetValue<bool>())
+                {
+                    brokeChannel();
+                }
+                if (Config.Item("immobileQ").GetValue<bool>())
+                {
+                    immobileQ();
+                }
+                Items();
+                KillSteal();
             }
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            if (!LXOrb && Orbwalker != null)
             {
-                Harass();
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                {
+                    Combo();
+                }
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+                {
+                    Harass();
+                }
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                {
+                    Jungle();
+                    LaneClear();
+                }
+                if (Config.Item("channelingBroker").GetValue<bool>())
+                {
+                    brokeChannel();
+                }
+                if (Config.Item("immobileQ").GetValue<bool>())
+                {
+                    immobileQ();
+                }
+                Items();
+                KillSteal();
             }
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
-            {
-                Jungle();
-                LaneClear();
-            }
-            if (Config.Item("channelingBroker").GetValue<bool>())
-            {
-                brokeChannel();
-            }
-            if (Config.Item("immobileQ").GetValue<bool>())
-            {
-                immobileQ();
-            }
-            Items();
-            KillSteal();
         }
         public static bool immobileTarget(AIHeroClient target)
         {
@@ -301,7 +336,7 @@ namespace Diana_Masterrace
                 }
             }
         }
-        private static void Items()
+        private static void Items() 
         {
             if (Config.Item("useZhonya").GetValue<bool>())
             {
@@ -362,7 +397,7 @@ namespace Diana_Masterrace
                 {
                     if (enemy.Distance(Player.Position) <= 300 && Q.GetPrediction(enemy).Hitchance >= HitChance.High)
                     {
-                        Q.Cast(enemy.Position + 150);
+                        Q.Cast(enemy.Position+150);
                     }
                     else if (enemy.Distance(Player.Position) >= 300 && Q.GetPrediction(enemy).Hitchance >= HitChance.High)
                     {
@@ -382,15 +417,15 @@ namespace Diana_Masterrace
                     E.Cast();
                 }
                 if (R.IsReady() && useR && enemy.Distance(Player.Position) <= R.Range &&
-                    Player.GetSpellDamage(enemy, SpellSlot.R) > enemy.Health && !enemy.IsZombie)
+                    Player.GetSpellDamage(enemy,SpellSlot.R) > enemy.Health && !enemy.IsZombie)
                 {
                     R.Cast(enemy);
                 }
                 if (enemy.Health <= GetComboDamage(enemy))
                 {
-                    Player.Spellbook.CastSpell(igniteSlot, enemy);
+                    Player.Spellbook.CastSpell(igniteSlot,enemy);
                 }
-
+                
             }
             if (Config.Item("cType").GetValue<StringList>().SelectedIndex == 0) // Advantage Hikigaya Combo
             {
@@ -424,7 +459,7 @@ namespace Diana_Masterrace
                 }
             }
         }
-        private static void Harass()
+        private static void Harass() 
         {
             if (ObjectManager.Player.ManaPercent > Config.Item("manaHarass").GetValue<Slider>().Value)
             {
@@ -432,7 +467,7 @@ namespace Diana_Masterrace
                 {
                     BasicHarass();
                 }
-            }
+            }  
         }
         private static void Jungle()
         {
@@ -464,8 +499,8 @@ namespace Diana_Masterrace
                 var mins = MinionManager.GetMinions(1000);
 
                 if (mins.Count <= 0)
-                {
-                    return;
+                { 
+                    return; 
                 }
 
                 if (Q.IsReady() && useQ)
@@ -484,7 +519,7 @@ namespace Diana_Masterrace
                     }
                 }
             }
-
+            
         }
         private static void LastHit()
         {
@@ -532,7 +567,7 @@ namespace Diana_Masterrace
             if (W.IsReady() && useW && enemy.Distance(Player.Position) < W.Range - 50)
             {
                 W.Cast();
-            }
+            }    
         }
         private static void Interrupter2_OnInterruptableTarget(AIHeroClient sender, Interrupter2.InterruptableTargetEventArgs args)
         {
@@ -624,7 +659,7 @@ namespace Diana_Masterrace
                     Drawing.DrawText(yx[0], yx[1], System.Drawing.Color.SpringGreen, "Q Hitchance >= High");
                 }
             }
-
+           
         }
     }
 }

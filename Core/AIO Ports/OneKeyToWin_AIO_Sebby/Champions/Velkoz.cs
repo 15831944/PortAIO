@@ -114,8 +114,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 }
                 OktwCommon.blockMove = true;
                 OktwCommon.blockAttack = true;
-                Orbwalking.Attack = false;
-                Orbwalking.Move = false;
+                SebbyLib.Orbwalking.Attack = false;
+                SebbyLib.Orbwalking.Move = false;
             }
             else 
             {
@@ -123,8 +123,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                     LogicR();
                 OktwCommon.blockMove = false;
                 OktwCommon.blockAttack = false;
-                Orbwalking.Attack = true;
-                Orbwalking.Move = true;
+                SebbyLib.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Move = true;
             }
 
             if (Program.LagFree(4))

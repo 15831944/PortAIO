@@ -21,7 +21,7 @@ using EloBuddy;
         private static List<Riu> Riu { get { return Program.Riu; } }
         public static void lumriu()
         {
-            if (Orbwalker.GetOrbwalkingPoint().Distance(Player.Position) <= 50)
+            if (Orbwalker._orbwalkingPoint.Distance(Player.Position) <= 50)
             {
                 Orbwalker.SetMovement(false);
             }
@@ -132,7 +132,7 @@ using EloBuddy;
             }
             else if (Program.RiuNo1 != null && Player.Distance(Program.RiuNo1.Position) <= 70 && Orbwalking.CanMove(40))
             {
-                EloBuddy.Player.IssueOrder(GameObjectOrder.Stop,Player);
+                EloBuddy.Player.IssueOrder(GameObjectOrder.HoldPosition,Player);
                 Orbwalker.SetOrbwalkingPoint(Program.RiuNo1.Position);
                 Orbwalker.SetMovement(false);
                 if (Qbuff == null) { Program.Orbwalker.SetAttack(true); }

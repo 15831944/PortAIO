@@ -46,7 +46,7 @@ using EloBuddy;
 
             #region Initialize Events
             Spellbook.OnCastSpell += EventHandlers.Spellbook_OnCastSpell;
-            Obj_AI_Base.OnSpellCast += EventHandlers.AIHeroClient_OnProcessSpellCast;
+            AIHeroClient.OnProcessSpellCast += EventHandlers.AIHeroClient_OnProcessSpellCast;
             #endregion
         }
     }

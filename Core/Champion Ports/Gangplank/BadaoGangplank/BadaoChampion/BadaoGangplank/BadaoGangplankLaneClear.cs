@@ -27,7 +27,7 @@ namespace BadaoKingdom.BadaoChampion.BadaoGangplank
                 return;
             foreach (Obj_AI_Minion minion in MinionManager.GetMinions(BadaoMainVariables.Q.Range).OrderBy(x => x.Health))
             {
-                if (minion.BadaoIsValidTarget() && BadaoMainVariables.Q.GetDamage(minion) >= minion.Health && !(Orbwalking.InAutoAttackRange(minion)))
+                if (minion.BadaoIsValidTarget() && BadaoMainVariables.Q.GetDamage(minion) >= minion.Health)
                 {
                     BadaoMainVariables.Q.Cast(minion);
                 }

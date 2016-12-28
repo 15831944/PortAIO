@@ -1,11 +1,10 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace ElUtilitySuite.Summoners
+ namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Linq;
 
-    using ElUtilitySuite.Logging;
     using ElUtilitySuite.Vendor.SFX;
 
     using LeagueSharp;
@@ -80,11 +79,11 @@ namespace ElUtilitySuite.Summoners
         public void Load()
         {
             var barrierSlot = this.Player.GetSpellSlot("summonerbarrier");
+
             if (barrierSlot == SpellSlot.Unknown)
             {
                 return;
             }
-
             IncomingDamageManager.RemoveDelay = 500;
             IncomingDamageManager.Skillshots = true;
             this.BarrierSpell = new Spell(barrierSlot, 550);
@@ -123,7 +122,7 @@ namespace ElUtilitySuite.Summoners
             }
             catch (Exception e)
             {
-                Logging.AddEntry(LoggingEntryType.Error, "@Barrier.cs: An error occurred: {0}", e);
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 

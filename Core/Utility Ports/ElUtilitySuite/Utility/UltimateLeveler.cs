@@ -1,11 +1,9 @@
 using EloBuddy; 
 using LeagueSharp.Common; 
-namespace ElUtilitySuite.Utility
+ namespace ElUtilitySuite.Utility
 {
     using System;
     using System.Linq;
-
-    using ElUtilitySuite.Logging;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -63,18 +61,11 @@ namespace ElUtilitySuite.Utility
         /// </summary>
         public void Load()
         {
-            try
+            if (
+                !BlacklistedChampions.Any(
+                    x => x.Equals(ObjectManager.Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (
-                    !BlacklistedChampions.Any(
-                        x => x.Equals(ObjectManager.Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    Obj_AI_Base.OnLevelUp += this.ObjAiBaseOnOnLevelUp;
-                }
-            }
-            catch (Exception e)
-            {
-                Logging.AddEntry(LoggingEntryType.Error, "@UltimateLeveler.cs: An error occurred: {0}", e);
+                Obj_AI_Base.OnLevelUp += this.ObjAiBaseOnOnLevelUp;
             }
         }
 
@@ -89,21 +80,14 @@ namespace ElUtilitySuite.Utility
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ObjAiBaseOnOnLevelUp(Obj_AI_Base sender, EventArgs args)
         {
-            try
+            if (!sender.IsMe)
             {
-                if (!sender.IsMe)
-                {
-                    return;
-                }
-
-                if (this.Menu.Item("AutoLevelR").IsActive())
-                {
-                    LeagueSharp.Common.Utility.DelayAction.Add(random.Next(100, 1000), () => sender.Spellbook.LevelSpell(SpellSlot.R));
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (this.Menu.Item("AutoLevelR").IsActive())
             {
-                Logging.AddEntry(LoggingEntryType.Error, "@UltimateLeveler.cs: An error occurred: {0}", e);
+                LeagueSharp.Common.Utility.DelayAction.Add(random.Next(100, 1000), () => sender.Spellbook.LevelSpell(SpellSlot.R));
             }
         }
 

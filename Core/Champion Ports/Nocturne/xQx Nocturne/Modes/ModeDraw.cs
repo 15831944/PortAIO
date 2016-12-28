@@ -4,17 +4,18 @@ using System.Drawing;
 using LeagueSharp.Common;
 using Nocturne.Champion;
 using Nocturne.Common;
-using PortAIO.Properties;
 using SharpDX;
 using Color = System.Drawing.Color;
 using CommonGeometry = Nocturne.Common.CommonGeometry;
 
 using EloBuddy; 
-using LeagueSharp.Common; 
-namespace Nocturne.Modes
+ using LeagueSharp.Common; 
+ namespace Nocturne.Modes
 {
     using System.Linq;
     using LeagueSharp;
+    using PortAIO.Properties;
+
     internal class NocturneQ
     {
         public GameObject Object { get; set; }
